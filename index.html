@@ -152,114 +152,63 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 .rays.on{opacity:1}
 #mood-badge{position:absolute;top:.75rem;right:.9rem;z-index:20;font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;padding:.18rem .5rem;border:1px solid rgba(201,168,76,.18);color:rgba(201,168,76,.4);background:rgba(0,0,0,.55);backdrop-filter:blur(6px);transition:all .5s}
 
-/* ── Two-figure scene (like the NotebookLM image) ── */
+/* ── NPC Scene — static image + dynamic overlays ── */
 .npc-scene{
-  flex-shrink:0;height:44%;min-height:200px;
-  position:relative;z-index:5;
-  display:flex;align-items:flex-end;justify-content:center;
+  flex-shrink:0;height:45%;min-height:220px;
+  position:relative;z-index:5;overflow:hidden;
+  background:#0a0500;
+}
+#npc-img-wrap{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
   overflow:hidden;
 }
-
-/* Architectural pillars */
-.pillar{position:absolute;bottom:0;z-index:4;background:linear-gradient(90deg,rgba(70,40,12,.92),rgba(45,25,6,.98),rgba(70,40,12,.92));border-left:1px solid rgba(201,168,76,.04)}
-.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:12px;background:rgba(201,168,76,.07)}
-.pillar::after{content:'';position:absolute;top:12px;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,0,0,.06) 18px,rgba(0,0,0,.06) 19px)}
-
-/* Floor glow */
-.floor-glow{position:absolute;bottom:0;left:0;right:0;height:60px;z-index:3;background:linear-gradient(0deg,rgba(201,168,76,.06),transparent);pointer-events:none}
-
-/* Table in center */
-.scene-table{
-  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:280px;height:55px;z-index:5;
-  background:linear-gradient(180deg,#5a3010,#3a1e08);
-  border-top:3px solid #8a5520;
-  box-shadow:0 8px 30px rgba(0,0,0,.7);
+#npc-img{
+  width:100%;height:100%;object-fit:cover;object-position:center 15%;
+  filter:brightness(.55) saturate(.85);
+  transition:filter 1s ease;
 }
-.scene-table::before{content:'';position:absolute;inset:4px 8px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)}
-/* Scroll/parchment on table */
-.scene-scroll{
-  position:absolute;top:-28px;left:50%;transform:translateX(-50%);
-  width:220px;height:32px;
-  background:linear-gradient(180deg,#e8d5a0,#d4bc7a,#c4a860);
-  border:1px solid rgba(100,60,10,.5);
-  box-shadow:0 4px 15px rgba(0,0,0,.5);
+/* Gradient fade at bottom into chat */
+.npc-scene::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:45%;
+  background:linear-gradient(0deg,rgba(6,3,0,1) 0%,transparent 100%);
+  z-index:10;pointer-events:none;
 }
-.scene-scroll::before{content:'';position:absolute;left:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,#b8956a,#d4bc7a);border-right:1px solid rgba(100,60,10,.3)}
-.scene-scroll::after{content:'';position:absolute;right:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,#d4bc7a,#b8956a);border-left:1px solid rgba(100,60,10,.3)}
-
-/* Figure base class */
-.fig{
-  position:absolute;bottom:55px;z-index:6;
-  display:flex;flex-direction:column;align-items:center;
-  gap:0;
+/* Mood light overlay */
+#npc-light{
+  position:absolute;inset:0;z-index:6;
+  background:rgba(0,0,0,0);
+  mix-blend-mode:soft-light;
+  transition:background 1.2s ease;
+  pointer-events:none;
 }
-
-/* Figure body — robe */
-.fig-body{
-  width:70px;height:155px;position:relative;
-  animation:breathe 4s ease-in-out infinite;
+/* Name labels */
+.fig-names{
+  position:absolute;bottom:18px;left:0;right:0;
+  display:flex;justify-content:space-between;
+  padding:0 10%;z-index:11;pointer-events:none;
 }
-.fig-robe{
-  position:absolute;inset:0;
-  clip-path:polygon(38% 0%,62% 0%,70% 8%,80% 100%,20% 100%,30% 8%);
-  transition:background .6s ease;
+.fig-label-l,.fig-label-r{
+  font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;
+  color:var(--npc);text-shadow:0 0 18px var(--npcg),0 2px 6px rgba(0,0,0,1);
+  transition:color .6s,text-shadow .6s;
 }
-.fig-robe::before{content:'';position:absolute;inset:8px 18px;clip-path:polygon(30% 0%,70% 0%,65% 100%,35% 100%);background:linear-gradient(180deg,rgba(255,255,255,.12),transparent 60%)}
-/* Arm gestures */
-.fig-arm-l{position:absolute;bottom:55px;left:14px;width:20px;height:55px;transform-origin:top center;transform:rotate(-18deg);border-radius:10px;transition:background .6s}
-.fig-arm-r{position:absolute;bottom:55px;right:14px;width:20px;height:55px;transform-origin:top center;transform:rotate(18deg);border-radius:10px;transition:background .6s}
-
-/* Head */
-.fig-head{
-  width:42px;height:42px;border-radius:50%;
-  position:absolute;top:-50px;left:50%;transform:translateX(-50%);
-  box-shadow:0 0 20px var(--npcg),0 0 40px var(--npcg);
-  animation:breathe 4s ease-in-out infinite;
-  transition:box-shadow .6s,background .6s;
+.fig-label-l::before,.fig-label-r::before{
+  content:'';display:block;width:28px;height:1px;margin:0 auto .3rem;
+  background:linear-gradient(90deg,transparent,var(--npc),transparent);opacity:.6;
 }
-.fig-head::after{content:'';position:absolute;bottom:2px;left:20%;right:20%;height:35%;background:rgba(0,0,0,.2);border-radius:0 0 50% 50%}
-
-/* Halo (temple theme) */
-.fig-halo{
-  position:absolute;top:-62px;left:50%;transform:translateX(-50%);
-  width:54px;height:54px;border-radius:50%;
+/* Halos for temple theme */
+.halo{
+  position:absolute;width:80px;height:80px;border-radius:50%;
   border:1px solid rgba(201,168,76,0);
-  pointer-events:none;transition:all .8s ease;
+  z-index:8;pointer-events:none;
+  transition:all .8s ease;top:18%;
 }
-.fig-halo.on{border-color:rgba(201,168,76,.45);box-shadow:0 0 18px rgba(201,168,76,.35);animation:halo-pulse 3s ease-in-out infinite}
+.halo-l{left:18%;}
+.halo-r{right:18%;}
+.halo.on{border-color:rgba(201,168,76,.5);box-shadow:0 0 25px rgba(201,168,76,.4),0 0 50px rgba(201,168,76,.15);animation:halo-pulse 3s ease-in-out infinite}
 @keyframes halo-pulse{0%,100%{opacity:.5}50%{opacity:1}}
-
-/* Beard / hair details */
-.fig-hair{position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:36px;height:18px;border-radius:50% 50% 0 0;opacity:.7;transition:background .6s}
-.fig-beard{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:22px;height:16px;border-radius:0 0 50% 50%;opacity:.6;transition:background .6s}
-
-/* Figure glow on floor */
-.fig-glow{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:100px;height:30px;border-radius:50%;background:radial-gradient(ellipse,var(--npcg) 0%,transparent 70%);transition:background .6s;pointer-events:none}
-
-/* Name label under figure */
-.fig-label{
-  position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
-  font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18em;
-  white-space:nowrap;
-  text-shadow:0 0 14px var(--npcg),0 2px 4px rgba(0,0,0,.9);
-  transition:color .6s;
-}
-.fig-label::before{content:'';display:block;width:30px;height:1px;margin:0 auto .3rem;background:linear-gradient(90deg,transparent,var(--npc),transparent);opacity:.5}
-
 @keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
-
-/* Figure positioning */
-.fig-left{left:calc(50% - 180px)}
-.fig-right{right:calc(50% - 180px)}
-.fig-right .fig-robe{transform:scaleX(-1)}
-.fig-right .fig-arm-l{transform:rotate(18deg)}
-.fig-right .fig-arm-r{transform:rotate(-18deg)}
-.fig-right .fig-label{left:auto;right:50%;transform:translateX(50%)}
-
-/* Active speaker highlight */
-.fig.speaking .fig-head{box-shadow:0 0 30px var(--npcg),0 0 60px var(--npcg)!important}
-.fig.speaking .fig-robe{filter:brightness(1.2)}
 
 /* ── Chat ── */
 .chat-wrap{flex:1;display:flex;flex-direction:column;position:relative;z-index:10;min-height:0;background:linear-gradient(180deg,rgba(6,3,0,0) 0%,rgba(6,3,0,.95) 8%)}
@@ -373,7 +322,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 
     <!-- BOARD -->
     <div class="panel on" id="board-panel">
-      <div id="board-hint">Κλικ σε κάρτα για άνοιγμα · Σύρε για μετακίνηση</div>
+      <div id="board-hint">Κλικ → άνοιγμα · Σύρε → μετακίνηση · Δεξί κλικ → σύνδεση κλωστή</div>
       <svg id="bsvg"></svg>
       <div id="blegend">
         <div class="ltitle">Σύνδεσμοι</div>
@@ -401,46 +350,21 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
       <div class="rays" id="rays"></div>
       <div id="mood-badge">● Αναμονή</div>
 
-      <div class="npc-scene">
-        <!-- Pillars -->
-        <div class="pillar" style="left:3%;width:32px;height:90%"></div>
-        <div class="pillar" style="left:10%;width:22px;height:70%"></div>
-        <div class="pillar" style="right:3%;width:32px;height:90%"></div>
-        <div class="pillar" style="right:10%;width:22px;height:70%"></div>
-        <div class="floor-glow"></div>
-
-        <!-- Table with scroll -->
-        <div class="scene-table"><div class="scene-scroll"></div></div>
-
-        <!-- Figure LEFT (figure 1 / older philosopher) -->
-        <div class="fig fig-left" id="fig-left">
-          <div class="fig-body">
-            <div class="fig-halo" id="halo-left"></div>
-            <div class="fig-head" id="head-left"></div>
-            <div class="fig-hair" id="hair-left"></div>
-            <div class="fig-beard" id="beard-left"></div>
-            <div class="fig-robe" id="robe-left"></div>
-            <div class="fig-arm-l" id="arml-left"></div>
-            <div class="fig-arm-r" id="armr-left"></div>
-          </div>
-          <div class="fig-glow" id="glow-left"></div>
-          <div class="fig-label" id="label-left">—</div>
+      <!-- NPC Scene: static image as background, dynamic overlays on top -->
+      <div class="npc-scene" id="npc-scene">
+        <div id="npc-img-wrap">
+          <img id="npc-img" src="assets/npc-scene.jpg" alt="" onerror="this.src='assets/bg-library.jpg'"/>
         </div>
-
-        <!-- Figure RIGHT (figure 2 / younger) -->
-        <div class="fig fig-right" id="fig-right">
-          <div class="fig-body">
-            <div class="fig-halo" id="halo-right"></div>
-            <div class="fig-head" id="head-right"></div>
-            <div class="fig-hair" id="hair-right"></div>
-            <div class="fig-beard" id="beard-right"></div>
-            <div class="fig-robe" id="robe-right"></div>
-            <div class="fig-arm-l" id="arml-right"></div>
-            <div class="fig-arm-r" id="armr-right"></div>
-          </div>
-          <div class="fig-glow" id="glow-right"></div>
-          <div class="fig-label" id="label-right">—</div>
+        <!-- Dynamic light overlay (mood) -->
+        <div id="npc-light"></div>
+        <!-- Name labels at bottom of scene -->
+        <div class="fig-names">
+          <div class="fig-label-l" id="label-left">—</div>
+          <div class="fig-label-r" id="label-right">—</div>
         </div>
+        <!-- Halos for temple theme -->
+        <div class="halo halo-l" id="halo-left"></div>
+        <div class="halo halo-r" id="halo-right"></div>
       </div>
 
       <div class="chat-wrap">
@@ -492,9 +416,9 @@ const S={d:null,unlocked:new Set(),rooms:new Set(),revelations:new Set(),curRoom
 /* ── THEMES ── */
 const TH={
   library:{col:'#c9a84c',glow:'rgba(201,168,76,.5)',bg:'assets/bg-library.jpg',grad:'linear-gradient(160deg,#1a0e04,#2d1a08 50%,#1a0e04)',rays:false,badge:'📚 Βιβλιοθήκη'},
-  temple: {col:'#b8d0ee',glow:'rgba(184,208,238,.5)',bg:'assets/bg-temple.jpg', grad:'linear-gradient(160deg,#060a14,#0e1a2e 50%,#060a14)',rays:true, badge:'🏛 Ναός'},
-  cave:   {col:'#9a7acc',glow:'rgba(154,122,204,.5)',bg:'assets/bg-cave.jpg',   grad:'linear-gradient(160deg,#090612,#160e25 50%,#090612)',rays:false,badge:'🌑 Σπήλαιο'},
-  agora:  {col:'#9aad7a',glow:'rgba(154,173,122,.5)',bg:'assets/bg-agora.jpg',  grad:'linear-gradient(160deg,#0a1205,#162012 50%,#0a1205)',rays:false,badge:'🌿 Αγορά'}
+  temple: {col:'#b8d0ee',glow:'rgba(184,208,238,.5)',bg:'assets/bg-library.jpg',grad:'linear-gradient(160deg,#060a14,#0e1a2e 50%,#060a14)',rays:true, badge:'🏛 Ναός'},
+  cave:   {col:'#9a7acc',glow:'rgba(154,122,204,.5)',bg:'assets/bg-library.jpg',grad:'linear-gradient(160deg,#090612,#160e25 50%,#090612)',rays:false,badge:'🌑 Σπήλαιο'},
+  agora:  {col:'#9aad7a',glow:'rgba(154,173,122,.5)',bg:'assets/bg-library.jpg',grad:'linear-gradient(160deg,#0a1205,#162012 50%,#0a1205)',rays:false,badge:'🌿 Αγορά'}
 };
 const MOODS={
   neutral:    {col:'#c9a84c',glow:'rgba(201,168,76,.45)', ov:'rgba(0,0,0,0)',      badge:'● Μελέτη'},
@@ -504,25 +428,7 @@ const MOODS={
 };
 const TLABELS={argument:'Επιχείρημα',contradiction:'Αντίφαση',evidence:'Τεκμήριο',synthesis:'Σύνθεση'};
 
-/* ── FIGURE PALETTES per theme ── */
-const FIG_STYLES={
-  library:{
-    left: {skin:'#d4956a',robe:'#5a4020',hair:'#3a2810',beard:'#3a2810',arm:'#5a4020'},
-    right:{skin:'#c8805a',robe:'#3a5060',hair:'#1a1a2e',beard:'#1a1a2e',arm:'#3a5060'}
-  },
-  temple:{
-    left: {skin:'#e0b090',robe:'#8a7050',hair:'#4a3820',beard:'#4a3820',arm:'#8a7050'},
-    right:{skin:'#d4956a',robe:'#4a5080',hair:'#2a1810',beard:'#2a1810',arm:'#4a5080'}
-  },
-  cave:{
-    left: {skin:'#c8805a',robe:'#3a2050',hair:'#1a1020',beard:'#1a1020',arm:'#3a2050'},
-    right:{skin:'#d4956a',robe:'#502030',hair:'#2a1418',beard:'#2a1418',arm:'#502030'}
-  },
-  agora:{
-    left: {skin:'#d4956a',robe:'#506040',hair:'#3a2810',beard:'#3a2810',arm:'#506040'},
-    right:{skin:'#c0785a',robe:'#406050',hair:'#1a2010',beard:'#1a2010',arm:'#406050'}
-  }
-};
+/* FIG_STYLES removed — using image-based scene */
 
 /* ── LOAD ── */
 async function doLoad(){
@@ -540,7 +446,12 @@ function boot(data){
   S.d=data;
   S.unlocked.add(data.investigation_board.clues[0].id);
   document.getElementById('hcase').textContent=data.title;
-  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE') document.getElementById('ailive').style.display='inline';
+  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){
+    document.getElementById('ailive').style.display='inline';
+    console.log('✅ Gemini key loaded, length:',KEY.length);
+  } else {
+    console.warn('⚠️ No Gemini key — NPC will use fallback replies');
+  }
   document.getElementById('splash').classList.add('out');
   setTimeout(()=>{
     document.getElementById('splash').style.display='none';
@@ -576,7 +487,14 @@ function renderBoard(){
     el.style.cssText='left:'+pos[i].x+'px;top:'+pos[i].y+'px;transform:rotate('+pos[i].r+'deg)';
     const dots=[1,2,3].map(n=>'<div class="dot'+(n<=cl.difficulty?' on':'')+'"></div>').join('');
     el.innerHTML='<div class="pin"></div><div class="ctype">'+(TLABELS[cl.type]||cl.type)+'</div><div class="ctitle">'+cl.title+'</div><div class="cbody">'+(ok?cl.content:'🔒 Κλειδωμένο')+'</div><div class="cfoot"><div class="csrc">'+cl.source+'</div><div class="cdots">'+dots+'</div></div>';
-    if(ok) makeDrag(el,()=>openModal(cl));
+    if(ok){
+      makeDrag(el,()=>{
+        if(_connectFrom&&_connectFrom!==cl.id){startConnect(cl.id);}
+        else{openModal(cl);}
+      });
+      // Right-click = start/end connect mode
+      el.addEventListener('contextmenu',e=>{e.preventDefault();startConnect(cl.id);});
+    }
     panel.appendChild(el);
     EM[cl.id]={el};
   });
@@ -642,39 +560,69 @@ function makeDrag(el,onClick){
 function drawStrings(){
   const svg=document.getElementById('bsvg');
   svg.innerHTML='';
-  const br=svg.getBoundingClientRect();
   if(!S.d) return;
   const cc={contrast:'#c0392b',agreement:'#4a9a4a',development:'#c9a84c'};
   S.d.investigation_board.connections.forEach(c=>{
     const f=EM[c.from],t=EM[c.to]; if(!f||!t) return;
-    const fr=f.el.getBoundingClientRect(),tr=t.el.getBoundingClientRect();
-    const x1=fr.left-br.left+fr.width/2, y1=fr.top-br.top+fr.height/2;
-    const x2=tr.left-br.left+tr.width/2, y2=tr.top-br.top+tr.height/2;
-    // Slight curve
-    const mx=(x1+x2)/2,my=(y1+y2)/2;
-    const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
-    const curve=Math.min(60,len*.2);
-    const cx=mx+(-dy/len)*curve*(Math.random()>.5?1:-1);
-    const cy=my+(dx/len)*curve*(Math.random()>.5?1:-1);
+    const fe=f.el,te=t.el;
+    const x1=fe.offsetLeft+fe.offsetWidth/2;
+    const y1=fe.offsetTop+fe.offsetHeight/2;
+    const x2=te.offsetLeft+te.offsetWidth/2;
+    const y2=te.offsetTop+te.offsetHeight/2;
+    if(isNaN(x1)||isNaN(y1)||isNaN(x2)||isNaN(y2)) return;
+    if(x1===0&&y1===0&&x2===0&&y2===0) return;
+    const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy)||1;
+    const curve=Math.min(60,len*.25);
+    const side=(c.from+c.to).length%2===0?1:-1;
+    const cx=(x1+x2)/2+(-dy/len)*curve*side;
+    const cy=(y1+y2)/2+(dx/len)*curve*side;
     const col=cc[c.type]||'#c0392b';
-    // Shadow/outline for visibility
-    const shadow=document.createElementNS('http://www.w3.org/2000/svg','path');
-    shadow.setAttribute('d','M'+x1+','+y1+' Q'+cx+','+cy+' '+x2+','+y2);
-    shadow.setAttribute('stroke','rgba(0,0,0,.5)'); shadow.setAttribute('stroke-width','3.5'); shadow.setAttribute('fill','none');
-    svg.appendChild(shadow);
-    // Main string
+    const d='M'+x1+','+y1+' Q'+cx+','+cy+' '+x2+','+y2;
+    const sh=document.createElementNS('http://www.w3.org/2000/svg','path');
+    sh.setAttribute('d',d); sh.setAttribute('stroke','rgba(0,0,0,.65)');
+    sh.setAttribute('stroke-width','4'); sh.setAttribute('fill','none');
+    svg.appendChild(sh);
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d','M'+x1+','+y1+' Q'+cx+','+cy+' '+x2+','+y2);
-    p.setAttribute('stroke',col); p.setAttribute('stroke-width','1.8'); p.setAttribute('fill','none');
-    p.setAttribute('stroke-opacity','0.85');
-    if(c.type!=='contrast') p.setAttribute('stroke-dasharray','6,4');
-    const ti=document.createElementNS('http://www.w3.org/2000/svg','title'); ti.textContent=c.description||''; p.appendChild(ti);
+    p.setAttribute('d',d); p.setAttribute('stroke',col);
+    p.setAttribute('stroke-width','2.2'); p.setAttribute('fill','none');
+    p.setAttribute('stroke-opacity','0.92');
+    if(c.type!=='contrast') p.setAttribute('stroke-dasharray','7,4');
+    const ti=document.createElementNS('http://www.w3.org/2000/svg','title');
+    ti.textContent=(c.description||c.type); p.appendChild(ti);
     svg.appendChild(p);
-    // Dots at endpoints
-    [x1,y1,x2,y2].forEach((_,i,a)=>{if(i%2===0){const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('cx',a[i]);dot.setAttribute('cy',a[i+1]);dot.setAttribute('r','4');dot.setAttribute('fill',col);dot.setAttribute('opacity','0.6');svg.appendChild(dot);}});
+    [[x1,y1],[x2,y2]].forEach(function(pt){
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      dot.setAttribute('cx',pt[0]); dot.setAttribute('cy',pt[1]);
+      dot.setAttribute('r','5'); dot.setAttribute('fill',col);
+      dot.setAttribute('opacity','0.75'); svg.appendChild(dot);
+    });
   });
 }
 
+// ── DRAG-TO-CONNECT: δεξί κλικ σε κάρτα → επιλογή, δεξί κλικ σε άλλη → σύνδεση ──
+let _connectFrom=null;
+function startConnect(clueId){
+  if(_connectFrom===clueId){
+    _connectFrom=null;
+    document.querySelectorAll('.cc').forEach(function(e){e.classList.remove('string-start');});
+    return;
+  }
+  if(_connectFrom){
+    const exists=S.d.investigation_board.connections.find(function(c){
+      return (c.from===_connectFrom&&c.to===clueId)||(c.from===clueId&&c.to===_connectFrom);
+    });
+    if(!exists){
+      S.d.investigation_board.connections.push({from:_connectFrom,to:clueId,type:'contrast',description:'Χειροκίνητη σύνδεση'});
+    }
+    _connectFrom=null;
+    document.querySelectorAll('.cc').forEach(function(e){e.classList.remove('string-start');});
+    drawStrings();
+  } else {
+    _connectFrom=clueId;
+    document.querySelectorAll('.cc').forEach(function(e){e.classList.remove('string-start');});
+    document.getElementById('cc-'+clueId).classList.add('string-start');
+  }
+}
 window.addEventListener('resize',()=>{if(S.d)renderBoard();});
 
 /* ── MODAL ── */
@@ -813,40 +761,34 @@ function updPalBtns(){
 }
 
 /* ═══════════════════════════════════
-   NPC FIGURES — CSS portrait system
-   Two philosophers face each other
-   Colors change per theme + mood
+   NPC SCENE — image-based with dynamic lighting
 ═══════════════════════════════════ */
-function paintFigure(side, style, npcColor, npcGlow, isTemple){
-  const s=side; // 'left' or 'right'
-  const head=document.getElementById('head-'+s);
-  const hair=document.getElementById('hair-'+s);
-  const beard=document.getElementById('beard-'+s);
-  const robe=document.getElementById('robe-'+s);
-  const arml=document.getElementById('arml-'+s);
-  const armr=document.getElementById('armr-'+s);
-  const glow=document.getElementById('glow-'+s);
-  const halo=document.getElementById('halo-'+s);
-  const label=document.getElementById('label-'+s);
+function setSceneColors(npcColor, npcGlow, moodOverlay){
+  document.documentElement.style.setProperty('--npc', npcColor);
+  document.documentElement.style.setProperty('--npcg', npcGlow);
+  const ll=document.getElementById('label-left'),lr=document.getElementById('label-right');
+  const sh='0 0 18px '+npcGlow+',0 2px 6px rgba(0,0,0,1)';
+  if(ll){ll.style.color=npcColor;ll.style.textShadow=sh;}
+  if(lr){lr.style.color=npcColor;lr.style.textShadow=sh;}
+  // Mood light tint on image
+  const nl=document.getElementById('npc-light');
+  if(nl) nl.style.background=moodOverlay||'rgba(0,0,0,0)';
+}
 
-  if(head){
-    head.style.background='radial-gradient(circle at 38% 32%,#f0c8a0,'+style.skin+' 60%,rgba(0,0,0,.4))';
-    head.style.boxShadow='0 0 22px '+npcGlow+',0 0 44px '+npcGlow;
-  }
-  if(hair) hair.style.background=style.hair;
-  if(beard) beard.style.background=style.beard;
-  if(robe){robe.style.background='linear-gradient(160deg,'+npcColor+' 0%,'+style.robe+' 40%,rgba(0,0,0,.5) 100%)';robe.style.filter='drop-shadow(0 0 18px '+npcGlow+')';}
-  if(arml) arml.style.background=style.arm;
-  if(armr) armr.style.background=style.arm;
-  if(glow) glow.style.background='radial-gradient(ellipse,'+npcGlow+' 0%,transparent 70%)';
-  if(halo) halo.classList.toggle('on', isTemple);
-  if(label){label.style.color=npcColor;label.style.textShadow='0 0 14px '+npcGlow+',0 2px 4px rgba(0,0,0,.9)';}
+function setHalos(on){
+  ['halo-left','halo-right'].forEach(id=>{
+    const h=document.getElementById(id);
+    if(h) h.classList.toggle('on',on);
+  });
 }
 
 function setSpeaker(side){
-  // highlight the speaking figure
-  document.getElementById('fig-left').classList.toggle('speaking', side==='left');
-  document.getElementById('fig-right').classList.toggle('speaking', side==='right');
+  // Brighten the image slightly when NPC speaks
+  const img=document.getElementById('npc-img');
+  if(!img) return;
+  // subtle flash
+  img.style.filter='brightness(.75) saturate(.9)';
+  setTimeout(()=>img.style.filter='brightness(.55) saturate(.85)',600);
 }
 
 function startRoom(roomId){
@@ -858,29 +800,30 @@ function startRoom(roomId){
   // ── Background ──
   const th=TH[room.theme]||TH.library;
   const bg=document.getElementById('scene-bg');
-  bg.style.background=th.grad; // set gradient immediately as fallback
+  bg.style.background=th.grad;
   bg.style.backgroundImage='none';
+  // Try loading background image — log result for debugging
   const img=new Image();
-  img.onload=()=>{bg.style.backgroundImage="url('"+th.bg+"')";bg.style.backgroundSize='cover';bg.style.backgroundPosition='center 20%';};
+  img.onload=()=>{
+    console.log('✅ BG loaded:',th.bg);
+    bg.style.backgroundImage="url('"+th.bg+"')";
+    bg.style.backgroundSize='cover';
+    bg.style.backgroundPosition='center 20%';
+  };
+  img.onerror=()=>console.warn('❌ BG 404:',th.bg,' — using gradient fallback');
   img.src=th.bg;
 
   document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
   document.getElementById('rays').classList.toggle('on',th.rays);
   document.getElementById('mood-badge').textContent=th.badge;
 
-  // ── Paint both figures ──
+  // ── Scene colors + figure names ──
   const figs=S.d.investigation_board.figures;
-  const pal=FIG_STYLES[room.theme]||FIG_STYLES.library;
-  const isTemple=room.theme==='temple';
-
-  paintFigure('left', pal.left, th.col, th.glow, isTemple);
-  paintFigure('right', pal.right, th.col, th.glow, isTemple);
-
-  // Set names from case figures
-  if(document.getElementById('label-left')) document.getElementById('label-left').textContent=figs[0]?figs[0].name:'—';
-  if(document.getElementById('label-right')) document.getElementById('label-right').textContent=figs[1]?figs[1].name:'—';
-
-  setSpeaker('left'); // NPC greets first
+  setSceneColors(th.col, th.glow, 'rgba(0,0,0,0)');
+  setHalos(room.theme==='temple');
+  const ll=document.getElementById('label-left'),lr=document.getElementById('label-right');
+  if(ll) ll.textContent=figs[0]?figs[0].name:'—';
+  if(lr) lr.textContent=figs[1]?figs[1].name:'—';
 
   // ── Chat reset ──
   const area=document.getElementById('chat');
@@ -897,15 +840,8 @@ function applyMood(mood){
   document.getElementById('mood-layer').style.background=mc.ov;
   document.getElementById('rays').classList.toggle('on',mood==='enlightened');
   document.getElementById('mood-badge').textContent=mc.badge;
-  // Update figure glow colors on mood change
-  ['left','right'].forEach(s=>{
-    const h=document.getElementById('head-'+s),g=document.getElementById('glow-'+s);
-    if(h) h.style.boxShadow='0 0 22px '+mc.glow+',0 0 44px '+mc.glow;
-    if(g) g.style.background='radial-gradient(ellipse,'+mc.glow+' 0%,transparent 70%)';
-    const lb=document.getElementById('label-'+s);
-    if(lb){lb.style.color=mc.col;lb.style.textShadow='0 0 14px '+mc.glow+',0 2px 4px rgba(0,0,0,.9)';}
-    if(mood==='enlightened'){const hl=document.getElementById('halo-'+s);if(hl)hl.classList.add('on');}
-  });
+  setSceneColors(mc.col, mc.glow, mc.ov);
+  if(mood==='enlightened') setHalos(true);
   if(!S.mem[S.curRoom]) S.mem[S.curRoom]={moods:[]};
   S.mem[S.curRoom].moods.push(mood);
 }
@@ -985,50 +921,42 @@ async function send(){
 }
 
 async function geminiCall(room,dial,figs,clues){
-  /* FIX: system_instruction ως ξεχωριστό field που υποστηρίζει gemini-2.0-flash */
-  const sysText='Είσαι ο '+dial.greeting+', φιλόσοφος σε ένα Mind Palace.\n'+
-    'Δωμάτιο: "'+room.name+'". Ερώτημα: '+room.central_question+'\n'+
-    'Φιλόσοφοι: '+figs.map(f=>f.name+' ('+f.work+', '+f.era+')').join(' & ')+'.\n'+
-    'Ενδείξεις: '+clues.map(c=>c.title+': '+c.content.slice(0,80)).join(' | ')+'\n\n'+
-    'ΚΑΝΟΝΕΣ: Απαντάς ΠΑΝΤΑ Ελληνικά, 1ο πρόσωπο, ποιητικό ύφος, 2-4 προτάσεις.\n'+
-    'Επέστρεψε ΜΟΝΟ έγκυρο JSON (χωρίς markdown, χωρίς backticks):\n'+
-    '{"reply":"...","mood":"neutral|tense|enlightened|dark","newClue":null}';
+  const sys='Είσαι ο '+dial.greeting+', φιλόσοφος σε ένα Mind Palace. '+
+    'Δωμάτιο: "'+room.name+'". Κεντρικό ερώτημα: '+room.central_question+'. '+
+    'Φιλόσοφοι: '+figs.map(f=>f.name+' ('+f.work+', '+f.era+')').join(' & ')+'. '+
+    'Απαντάς ΠΑΝΤΑ στα Ελληνικά, 1ο πρόσωπο ως αρχαίος σοφός, ποιητικό ύφος, 2-3 προτάσεις. '+
+    'Επέστρεψε ΜΟΝΟ έγκυρο JSON: {"reply":"...","mood":"neutral|tense|enlightened|dark","newClue":null}';
 
-  // Build conversation — prepend system as first user turn if history empty
-  let contents=[...S.hist.slice(-12)];
-  if(contents.length===1){
-    // First message — inject system context before user turn
-    contents=[
-      {role:'user',parts:[{text:'[SYSTEM] '+sysText+'\n\n[USER] '+contents[0].parts[0].text}]}
-    ];
-  } else {
-    // Subsequent messages — add system reminder every 4 turns
-    if(S.hist.length%8===2){
-      contents=[
-        {role:'user',parts:[{text:'[Υπενθύμιση ρόλου: '+sysText.slice(0,200)+'...]\n\n'+contents[0].parts[0].text}]},
-        ...contents.slice(1)
-      ];
-    }
+  // Ensure strictly alternating user/model (Gemini API requirement)
+  const raw=[...S.hist.slice(-10)];
+  const contents=[];
+  let lastRole=null;
+  for(const h of raw){
+    if(h.role===lastRole) continue;
+    contents.push(h);
+    lastRole=h.role;
   }
+  if(contents.length===0||contents[0].role!=='user') return null;
 
   const r=await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+KEY,
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key='+KEY,
     {method:'POST',headers:{'Content-Type':'application/json'},
      body:JSON.stringify({
+       system_instruction:{parts:[{text:sys}]},
        contents,
-       generationConfig:{maxOutputTokens:400,temperature:.92,responseMimeType:'application/json'}
+       generationConfig:{maxOutputTokens:400,temperature:.9}
      })}
   );
   const data=await r.json();
-  if(data.error) throw new Error(data.error.message);
-  if(!data.candidates?.[0]?.content?.parts?.[0]) throw new Error('Κενή απάντηση από Gemini');
-  const raw=data.candidates[0].content.parts[0].text.trim();
-  // Strip any accidental markdown fences
-  const clean=raw.replace(/^```json?\s*/,'').replace(/\s*```$/,'').trim();
-  try{return JSON.parse(clean);}
-  catch{return{reply:clean,mood:'neutral',newClue:null};}
+  if(data.error){console.error('Gemini error:',data.error.message);throw new Error(data.error.message);}
+  if(!data.candidates?.[0]?.content?.parts?.[0]){console.error('Gemini empty:',JSON.stringify(data));throw new Error('Κενή απάντηση');}
+  const txt=data.candidates[0].content.parts[0].text.trim();
+  const clean=txt.replace(/^```json?\s*/,'').replace(/\s*```$/,'').trim();
+  const m=clean.match(/\{[\s\S]*\}/);
+  if(!m) return{reply:txt,mood:'neutral',newClue:null};
+  try{return JSON.parse(m[0]);}
+  catch{return{reply:txt,mood:'neutral',newClue:null};}
 }
-
 /* ── VERDICT ── */
 function renderVerdict(){
   document.getElementById('vtitle').textContent=S.d.title;
