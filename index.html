@@ -718,8 +718,8 @@ function buildRoom(scene,room,x,z){
   cp.forEach(([cx,cz])=>{
     const col=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,4.5,10),mat);
     col.position.set(x+cx,1.9,z+cz); col.castShadow=true; scene.add(col);
-    scene.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(.5,.22,.5),mat),{position:new THREE.Vector3(x+cx,4.2,z+cz)}));
-    scene.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(.44,.18,.44),mat),{position:new THREE.Vector3(x+cx,-.1,z+cz)}));
+    (()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.22,.5),mat);m.position.set(x+cx,4.2,z+cz);scene.add(m);})();
+    (()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.44,.18,.44),mat);m.position.set(x+cx,-.1,z+cz);scene.add(m);})();
   });
   const rf=new THREE.Mesh(new THREE.BoxGeometry(9.5,.32,7),mat); rf.position.set(x,4.36,z); rf.castShadow=true; scene.add(rf);
   if(isTp){
@@ -745,11 +745,11 @@ function buildRoom(scene,room,x,z){
   const nr=new THREE.Mesh(new THREE.ConeGeometry(.52,1.9,8),nm); nr.position.set(x,-.04,z); scene.add(nr);
   if(isTp){
     const hm=new THREE.MeshStandardMaterial({color:0xc9a84c,emissive:0xc9a84c,emissiveIntensity:.9,transparent:true,opacity:.25});
-    scene.add(Object.assign(new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,28),hm),{position:new THREE.Vector3(x,2.28,z)}));
+    (()=>{const m=new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,28),hm);m.position.set(x,2.28,z);scene.add(m);})();
   }
   const alt=new THREE.Mesh(new THREE.BoxGeometry(1.2,.72,.9),gm); alt.position.set(x+2,.07,z); scene.add(alt);
   const fm=new THREE.MeshStandardMaterial({color:0xff8800,emissive:0xff4400,emissiveIntensity:5,transparent:true,opacity:.9});
-  scene.add(Object.assign(new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),fm),{position:new THREE.Vector3(x+2,.56,z)}));
+  (()=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),fm);m.position.set(x+2,.56,z);scene.add(m);})();
   const fl=new THREE.PointLight(0xff6600,2,7); fl.position.set(x+2,1,z); scene.add(fl);
   const nl=new THREE.PointLight(nc,.6,8); nl.position.set(x,3,z); scene.add(nl);
 }
