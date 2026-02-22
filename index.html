@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="el">
+<html lang="el" xml:lang="el">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mind Palace</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&subset=greek,latin&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /* ═══════════════════════════════════════════════════════
@@ -18,6 +20,15 @@ window.MP_CONFIG = {
 };
 </script>
 <style>
+
+/* Greek font fallback — εμφανίζει ελληνικά ακόμα κι αν το Google Fonts αποτύχει */
+@font-face {
+  font-family: 'Cinzel';
+  src: local('Times New Roman'), local('Georgia');
+  unicode-range: U+0370-03FF;
+  font-display: swap;
+}
+
 :root {
   --gold: #c9a84c; --gold-lt: #e8c97a; --gold-dim: #6a5228;
   --parch: #f2e4c4; --ink: #180e00; --ink2: #3a2208;
@@ -27,7 +38,7 @@ window.MP_CONFIG = {
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; overflow:hidden; }
-body { background:var(--wood); color:var(--parch); font-family:'Crimson Text',serif; }
+body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','Times New Roman',Georgia,serif; }
 
 /* SPLASH */
 #splash {
@@ -53,7 +64,7 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text',se
 .s-lbl { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.22em; color:var(--gold-dim); text-transform:uppercase; }
 .s-form input {
   background:rgba(201,168,76,.04); border:1px solid var(--gold-dim);
-  color:var(--parch); font-family:'Crimson Text',serif; font-size:1rem;
+  color:var(--parch); font-family:'Crimson Text','Times New Roman',Georgia,serif; font-size:1rem;
   padding:.6rem .9rem; outline:none; width:100%;
   transition:border-color .3s, box-shadow .3s;
 }
@@ -316,7 +327,7 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text',se
 .sug:hover { border-color:var(--gold); color:var(--gold); background:rgba(201,168,76,.06); }
 
 .cin-row { display:flex; border-top:1px solid rgba(201,168,76,.08); flex-shrink:0; background:rgba(0,0,0,.75); backdrop-filter:blur(12px); }
-#cin { flex:1; background:transparent; border:none; outline:none; color:var(--parch); font-family:'Crimson Text',serif; font-size:1rem; padding:.85rem 1.1rem; }
+#cin { flex:1; background:transparent; border:none; outline:none; color:var(--parch); font-family:'Crimson Text','Times New Roman',Georgia,serif; font-size:1rem; padding:.85rem 1.1rem; }
 #cin::placeholder { color:rgba(201,168,76,.2); font-style:italic; }
 #csend { font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); background:var(--gold); border:none; padding:0 1.3rem; cursor:pointer; transition:all .2s; flex-shrink:0; }
 #csend:hover { background:var(--gold-lt); }
