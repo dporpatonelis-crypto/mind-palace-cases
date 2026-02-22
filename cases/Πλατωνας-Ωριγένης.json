@@ -1,0 +1,140 @@
+{
+  "case_id": "Πλατωνας-Ωριγένης",
+  "title": "Η ψυχή",
+  "method": "comparative",
+  "version": "1.0",
+  "created": "2026-02-22T15:05:25.873Z",
+  "status": "complete",
+  "investigation_board": {
+    "theme": "noir",
+    "figures": [
+      {
+        "name": "Πλάτωνας",
+        "work": "Φαίδων",
+        "era": "5ος π.Χ αιώνας"
+      },
+      {
+        "name": "Ωριγένης",
+        "work": "Περί αρχών",
+        "era": "3ος αιώνας"
+      }
+    ],
+    "concepts": {
+      "core": "Η φύση της ψυχής και η αθανασία",
+      "related": []
+    },
+    "clues": [
+      {
+        "id": "c1",
+        "title": "Η Γνώση ως Ανάμνηση",
+        "content": "Αν η μάθηση δεν είναι παρά ανάμνηση, τότε η ψυχή πρέπει να υπήρχε και πριν ενωθεί με το σώμα. Πώς αλλιώς θα γνωρίζαμε τις τέλειες Ιδέες, όπως η Ισότητα και η Δικαιοσύνη, τις οποίες δεν συναντάμε ποτέ σε απόλυτη μορφή στον αισθητό κόσμο;",
+        "source": "Πλάτωνας",
+        "type": "argument",
+        "difficulty": 1
+      },
+      {
+        "id": "c2",
+        "title": "Η Πτώση πριν τη Γέννηση",
+        "content": "Ενώ ο Πλάτων βλέπει την προΰπαρξη ως απόδειξη της θεϊκής φύσης της ψυχής, εγώ υποστηρίζω ότι οι ψυχές προϋπήρχαν ως νοερές οντότητες που, λόγω «κόρου» και αμέλειας, «έπεσαν» και ψύχθηκαν (έγιναν ψυχές), αποκτώντας σώματα. Η προΰπαρξη δεν είναι απόδειξη αιώνιας τελειότητας, αλλά η αρχή μιας πορείας αποκατάστασης.",
+        "source": "Ωριγένης",
+        "type": "contradiction",
+        "difficulty": 2
+      },
+      {
+        "id": "c3",
+        "title": "Το Ασύνθετο και το Άφθαρτο",
+        "content": "Ό,τι είναι σύνθετο μπορεί να διαλυθεί στα στοιχεία του. Η ψυχή, όμως, είναι αόρατη, ασώματη και συγγενής με τις αιώνιες και αμετάβλητες Ιδέες. Ως απλή και ασύνθετη φύση, δεν μπορεί να υποστεί διάλυση, όπως το σώμα. Επομένως, είναι άφθαρτη.",
+        "source": "Πλάτωνας",
+        "type": "evidence",
+        "difficulty": 2
+      },
+      {
+        "id": "c4",
+        "title": "Η Αποκατάσταση των Πάντων",
+        "content": "Η αθανασία δεν είναι απλώς η επιβίωση της ψυχής, αλλά η τελική αποκατάσταση όλων των λογικών όντων στην αρχική τους ενότητα με τον Θεό. Το σώμα δεν απορρίπτεται οριστικά, αλλά μεταμορφώνεται σε ένα «πνευματικό σώμα» κατά την ανάσταση. Ο τελικός σκοπός δεν είναι η φυγή από την ύλη, αλλά ο πλήρης μετασχηματισμός της.",
+        "source": "Ωριγένης",
+        "type": "argument",
+        "difficulty": 3
+      },
+      {
+        "id": "c5",
+        "title": "Κοινή Αφετηρία, Διαφορετικός Προορισμός",
+        "content": "Και οι δύο δέχονται μια λογική, προϋπάρχουσα ψυχή εγκλωβισμένη σε έναν υλικό κόσμο. Για τον έναν, η λύτρωση είναι η φιλοσοφική ανάβαση προς τη θέαση των Ιδεών. Για τον άλλον, είναι η παιδαγωγική διαδικασία της επιστροφής στον Θεό-Δημιουργό. Είναι η έννοια της «πτώσης» και της «θείας χάριτος» που μετατρέπει την πλατωνική φιλοσοφία σε χριστιανική θεολογία;",
+        "source": "Synthesis",
+        "type": "synthesis",
+        "difficulty": 3
+      }
+    ],
+    "connections": [
+      {
+        "from": "c1",
+        "to": "c2",
+        "type": "development",
+        "description": "c2 expands upon the initial premise set by c1, providing more specific detail."
+      },
+      {
+        "from": "c2",
+        "to": "c3",
+        "type": "contrast",
+        "description": "c3 introduces an opposing idea or a conflicting piece of evidence when compared to c2."
+      },
+      {
+        "from": "c3",
+        "to": "c4",
+        "type": "synthesis",
+        "description": "c4 reconciles the information from c2 and the contrast from c3, forming a new, more complex idea."
+      },
+      {
+        "from": "c4",
+        "to": "c5",
+        "type": "consequence",
+        "description": "c5 describes the logical outcome or result of the synthesis presented in c4."
+      }
+    ]
+  },
+  "mind_palace": {
+    "rooms": [
+      {
+        "id": "r1",
+        "name": "The Scribe's Atrium (Το Αίθριο του Γραφέα)",
+        "theme": "library",
+        "unlock_requirements": [
+          "c1",
+          "c2"
+        ],
+        "central_question": "What is the fundamental nature and origin of the soul according to the ancients?"
+      },
+      {
+        "id": "r2",
+        "name": "The Nexus of Being (Ο Ναός της Ύπαρξης)",
+        "theme": "temple",
+        "unlock_requirements": [
+          "c3",
+          "c4",
+          "c5"
+        ],
+        "central_question": "What is the soul's purpose and ultimate destiny?"
+      }
+    ],
+    "dialogues": [
+      {
+        "room_id": "r1",
+        "greeting": "Welcome. You stand where the first whispers of 'Psyche' were recorded. It began not as a ghost, but as a simple, vital force.",
+        "questions": [
+          "Before it was a vessel for identity, what was the soul's most basic, physical manifestation? Think of the last act of the living and the first absence in the dead.",
+          "Plato envisioned the soul as a chariot. What are the two warring horses and who is the driver, representing its three parts?"
+        ],
+        "revelation": "The soul, for the Greeks, was the principle of life itself—the breath that animates clay, the reason that guides chaotic impulse. It is the form, the essence, the 'what-it-is-to-be' you."
+      },
+      {
+        "room_id": "r2",
+        "greeting": "You have passed from definition to destiny. This is the Nexus of Being, where the soul is weighed not by what it *is*, but by what it *does* and what it *seeks*.",
+        "questions": [
+          "Aristotle saw the soul not as a prisoner in the body, but as its very function. If an axe's soul is to cut, what is the primary function of the rational human soul?",
+          "Beyond this life, the soul faces a journey. What is its ultimate goal in many philosophical and spiritual traditions? Is it to indulge the body or to transcend it?"
+        ],
+        "revelation": "Here, you see the synthesis. The soul is both the animating breath and the moral agent. It is the form of the body and the seeker of the eternal. Its purpose is not merely to exist, but to strive—for knowledge, for virtue, for a harmony that echoes beyond the confines of flesh and bone."
+      }
+    ]
+  }
+}
