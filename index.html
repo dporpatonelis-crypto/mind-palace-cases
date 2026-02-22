@@ -1,377 +1,334 @@
 <!DOCTYPE html>
-<html lang="el" xml:lang="el">
+<html lang="el">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mind Palace</title>
+<title>Mind Palace — Η Υπόθεση του Φιλοσόφου</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&subset=greek,latin&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* ═══════════════════════════════════════════════════════
-   CONFIG — ΑΛΛΑΞΤΕ ΜΟΝΟ ΤΙΣ 2 ΠΑΡΑΚΑΤΩ ΓΡΑΜΜΕΣ
-   Μην ανεβάσετε αυτό το αρχείο public αν βάλετε το key!
-   Μην ανεβάσετε το key σε public repo!
-═══════════════════════════════════════════════════════ */
+/* CONFIG — αλλάξτε μόνο εδώ */
 window.MP_CONFIG = {
   GEMINI_KEY : 'YOUR_GEMINI_KEY_HERE',
   REPO_BASE  : 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/cases/'
 };
 </script>
 <style>
-
-/* Greek font fallback — εμφανίζει ελληνικά ακόμα κι αν το Google Fonts αποτύχει */
-@font-face {
-  font-family: 'Cinzel';
-  src: local('Times New Roman'), local('Georgia');
-  unicode-range: U+0370-03FF;
-  font-display: swap;
-}
-
 :root {
-  --gold: #c9a84c; --gold-lt: #e8c97a; --gold-dim: #6a5228;
-  --parch: #f2e4c4; --ink: #180e00; --ink2: #3a2208;
-  --blood: #7a1515; --bloodbr: #c0392b;
-  --wood: #1c0e06; --woodm: #2c1810;
-  --npc: #c9a84c; --npcg: rgba(201,168,76,.5);
+  --gold:#c9a84c; --gold-lt:#e8c97a; --gold-dim:#6a5228;
+  --parch:#f2e4c4; --ink:#180e00; --ink2:#3a2208;
+  --blood:#7a1515; --bloodbr:#c0392b;
+  --wood:#1c0e06; --woodm:#2c1810;
+  --npc:#c9a84c; --npcg:rgba(201,168,76,.5);
 }
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-html, body { height:100%; overflow:hidden; }
-body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','Times New Roman',Georgia,serif; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgia,serif}
 
-/* SPLASH */
-#splash {
-  position:fixed; inset:0; z-index:1000;
-  background:radial-gradient(ellipse at 50% 40%, #1a0800, #000);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  transition:opacity 1s ease;
-}
-#splash.out { opacity:0; pointer-events:none; }
-.s-orb {
-  width:100px; height:100px; border-radius:50%;
-  border:1px solid var(--gold-dim);
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom:1.8rem; position:relative;
-  animation:orb 3s ease-in-out infinite;
-}
-.s-orb::before { content:''; position:absolute; inset:8px; border-radius:50%; border:1px solid rgba(201,168,76,.2); }
-.s-orb::after { content:'Φ'; font-family:'Cinzel Decorative',serif; font-size:2.4rem; color:var(--gold); text-shadow:0 0 30px var(--gold); }
-@keyframes orb { 0%,100%{box-shadow:0 0 20px rgba(201,168,76,.2)} 50%{box-shadow:0 0 55px rgba(201,168,76,.5)} }
-.s-title { font-family:'Cinzel Decorative',serif; font-size:clamp(1.4rem,4vw,2.2rem); color:var(--gold); letter-spacing:.2em; text-shadow:0 0 40px rgba(201,168,76,.4); }
-.s-sub { font-family:'Cinzel',serif; font-size:.62rem; color:var(--gold-dim); letter-spacing:.45em; text-transform:uppercase; margin:.4rem 0 2.5rem; }
-.s-form { display:flex; flex-direction:column; gap:.6rem; width:min(440px,88vw); }
-.s-lbl { font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.22em; color:var(--gold-dim); text-transform:uppercase; }
-.s-form input {
-  background:rgba(201,168,76,.04); border:1px solid var(--gold-dim);
-  color:var(--parch); font-family:'Crimson Text','Times New Roman',Georgia,serif; font-size:1rem;
-  padding:.6rem .9rem; outline:none; width:100%;
-  transition:border-color .3s, box-shadow .3s;
-}
-.s-form input:focus { border-color:var(--gold); box-shadow:0 0 14px rgba(201,168,76,.15); }
-.s-form input::placeholder { color:rgba(201,168,76,.3); font-style:italic; }
-.s-sep { display:flex; align-items:center; gap:.7rem; }
-.s-sep::before, .s-sep::after { content:''; flex:1; height:1px; background:var(--gold-dim); opacity:.2; }
-.s-sep span { font-family:'Cinzel',serif; font-size:.54rem; color:var(--gold-dim); letter-spacing:.15em; }
-.btn-g {
-  font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.28em; text-transform:uppercase;
-  color:var(--ink); background:linear-gradient(135deg,var(--gold-lt),var(--gold));
-  border:none; padding:.82rem; cursor:pointer; width:100%; margin-top:.3rem;
-  transition:all .3s;
-}
-.btn-g:hover { box-shadow:0 0 28px rgba(201,168,76,.5); transform:translateY(-1px); }
-.btn-o {
-  font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.18em; text-transform:uppercase;
-  color:var(--gold-dim); background:transparent; border:1px solid var(--gold-dim);
-  padding:.65rem; cursor:pointer; width:100%; transition:all .3s;
-}
-.btn-o:hover { border-color:var(--gold); color:var(--gold); }
+/* ── SPLASH ── */
+#splash{position:fixed;inset:0;z-index:1000;background:radial-gradient(ellipse at 50% 40%,#1a0800,#000);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity 1s ease}
+#splash.out{opacity:0;pointer-events:none}
+.s-orb{width:100px;height:100px;border-radius:50%;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;margin-bottom:1.8rem;position:relative;animation:orb 3s ease-in-out infinite}
+.s-orb::before{content:'';position:absolute;inset:8px;border-radius:50%;border:1px solid rgba(201,168,76,.2)}
+.s-orb::after{content:'Φ';font-family:'Cinzel Decorative',serif;font-size:2.4rem;color:var(--gold);text-shadow:0 0 30px var(--gold)}
+@keyframes orb{0%,100%{box-shadow:0 0 20px rgba(201,168,76,.2)}50%{box-shadow:0 0 55px rgba(201,168,76,.5)}}
+.s-title{font-family:'Cinzel Decorative',serif;font-size:clamp(1.4rem,4vw,2.2rem);color:var(--gold);letter-spacing:.2em;text-shadow:0 0 40px rgba(201,168,76,.4)}
+.s-sub{font-family:'Cinzel',serif;font-size:.62rem;color:var(--gold-dim);letter-spacing:.45em;text-transform:uppercase;margin:.4rem 0 2.5rem}
+.s-form{display:flex;flex-direction:column;gap:.6rem;width:min(440px,88vw)}
+.s-lbl{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.22em;color:var(--gold-dim);text-transform:uppercase}
+.s-form input{background:rgba(201,168,76,.04);border:1px solid var(--gold-dim);color:var(--parch);font-family:'Crimson Text',serif;font-size:1rem;padding:.6rem .9rem;outline:none;width:100%;transition:border-color .3s,box-shadow .3s}
+.s-form input:focus{border-color:var(--gold);box-shadow:0 0 14px rgba(201,168,76,.15)}
+.s-form input::placeholder{color:rgba(201,168,76,.3);font-style:italic}
+.s-sep{display:flex;align-items:center;gap:.7rem}
+.s-sep::before,.s-sep::after{content:'';flex:1;height:1px;background:var(--gold-dim);opacity:.2}
+.s-sep span{font-family:'Cinzel',serif;font-size:.54rem;color:var(--gold-dim);letter-spacing:.15em}
+.btn-g{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--ink);background:linear-gradient(135deg,var(--gold-lt),var(--gold));border:none;padding:.82rem;cursor:pointer;width:100%;margin-top:.3rem;transition:all .3s}
+.btn-g:hover{box-shadow:0 0 28px rgba(201,168,76,.5);transform:translateY(-1px)}
+.btn-o{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-dim);background:transparent;border:1px solid var(--gold-dim);padding:.65rem;cursor:pointer;width:100%;transition:all .3s}
+.btn-o:hover{border-color:var(--gold);color:var(--gold)}
 
-/* LOADING */
-#loading {
-  display:none; position:fixed; inset:0; z-index:2000;
-  background:rgba(0,0,0,.85); align-items:center; justify-content:center; flex-direction:column; gap:1.4rem;
-}
-#loading.on { display:flex; }
-.spin { width:44px; height:44px; border:2px solid rgba(201,168,76,.15); border-top-color:var(--gold); border-radius:50%; animation:spin .9s linear infinite; }
-@keyframes spin { to { transform:rotate(360deg); } }
-.load-txt { font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.35em; color:var(--gold); text-transform:uppercase; animation:blink 1.5s ease-in-out infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+/* ── LOADING ── */
+#loading{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.85);align-items:center;justify-content:center;flex-direction:column;gap:1.4rem}
+#loading.on{display:flex}
+.spin{width:44px;height:44px;border:2px solid rgba(201,168,76,.15);border-top-color:var(--gold);border-radius:50%;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
 
-/* APP */
-#app { display:none; height:100vh; width:100vw; flex-direction:column; }
-#app.on { display:flex; }
+/* ── APP ── */
+#app{display:none;height:100vh;width:100vw;flex-direction:column}
+#app.on{display:flex}
+#hdr{height:48px;flex-shrink:0;background:linear-gradient(180deg,#000,var(--wood));border-bottom:1px solid rgba(201,168,76,.12);display:flex;align-items:center;padding:0 1.2rem;gap:1rem;z-index:50}
+.hbrand{display:flex;align-items:center;gap:.6rem;flex-shrink:0}
+.hicon{width:28px;height:28px;border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.hname{font-family:'Cinzel Decorative',serif;font-size:.78rem;color:var(--gold)}
+.hcase{font-family:'Cinzel',serif;font-size:.64rem;color:rgba(242,228,196,.6);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hright{display:flex;align-items:center;gap:.7rem;flex-shrink:0}
+.prog-wrap{width:100px;height:2px;background:rgba(201,168,76,.1)}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));box-shadow:0 0 7px var(--gold);transition:width .6s ease}
+.prog-pct{font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-dim)}
+.ai-live{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.12em;background:var(--blood);color:#fff;padding:.1rem .35rem;display:none}
 
-/* HEADER */
-#hdr {
-  height:48px; flex-shrink:0;
-  background:linear-gradient(180deg,#000 0%,var(--wood) 100%);
-  border-bottom:1px solid rgba(201,168,76,.12);
-  display:flex; align-items:center; padding:0 1.2rem; gap:1rem; z-index:50;
-}
-.hbrand { display:flex; align-items:center; gap:.6rem; flex-shrink:0; }
-.hicon { width:28px; height:28px; border:1px solid var(--gold-dim); display:flex; align-items:center; justify-content:center; font-size:.8rem; }
-.hname { font-family:'Cinzel Decorative',serif; font-size:.78rem; color:var(--gold); }
-.hcase { font-family:'Cinzel',serif; font-size:.64rem; color:rgba(242,228,196,.6); flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.hright { display:flex; align-items:center; gap:.7rem; flex-shrink:0; }
-.prog-wrap { width:100px; height:2px; background:rgba(201,168,76,.1); }
-.prog-fill { height:100%; width:0%; background:linear-gradient(90deg,var(--gold-dim),var(--gold)); box-shadow:0 0 7px var(--gold); transition:width .6s ease; }
-.prog-pct { font-family:'Cinzel',serif; font-size:.58rem; color:var(--gold-dim); }
-.ai-live { font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.12em; background:var(--blood); color:#fff; padding:.1rem .35rem; display:none; }
+/* ── TABS ── */
+#tabs{height:36px;flex-shrink:0;background:var(--woodm);border-bottom:1px solid rgba(201,168,76,.08);display:flex;padding:0 1rem;overflow-x:auto}
+.tab{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.13em;text-transform:uppercase;color:var(--gold-dim);padding:0 1rem;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:.3rem;transition:color .2s,border-color .2s}
+.tab:hover{color:var(--gold)}
+.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
 
-/* TABS */
-#tabs {
-  height:36px; flex-shrink:0; background:var(--woodm);
-  border-bottom:1px solid rgba(201,168,76,.08);
-  display:flex; padding:0 1rem; overflow-x:auto;
-}
-.tab {
-  font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.13em; text-transform:uppercase;
-  color:var(--gold-dim); padding:0 1rem; cursor:pointer; border:none; background:none;
-  border-bottom:2px solid transparent; white-space:nowrap;
-  display:flex; align-items:center; gap:.3rem; transition:color .2s, border-color .2s;
-}
-.tab:hover { color:var(--gold); }
-.tab.on { color:var(--gold); border-bottom-color:var(--gold); }
+/* ── PANELS ── */
+#content{flex:1;overflow:hidden;position:relative;min-height:0}
+.panel{display:none;width:100%;height:100%;position:absolute;inset:0;overflow:auto}
+.panel.on{display:block}
 
-/* CONTENT */
-#content { flex:1; overflow:hidden; position:relative; min-height:0; }
-.panel { display:none; width:100%; height:100%; position:absolute; inset:0; overflow:auto; }
-.panel.on { display:block; }
-
-/* ── BOARD ── */
-#board-panel {
+/* ═══════════════════════════════════
+   BOARD — cork board with draggable cards + SVG strings
+═══════════════════════════════════ */
+#board-panel{
   overflow:hidden;
-  background: radial-gradient(ellipse 55% 45% at 22% 30%, rgba(100,55,15,.12), transparent 60%),
-              radial-gradient(ellipse 50% 60% at 78% 68%, rgba(80,40,8,.1), transparent 60%),
-              #221208;
+  background:radial-gradient(ellipse 55% 45% at 22% 30%,rgba(100,55,15,.15),transparent 60%),
+             radial-gradient(ellipse 50% 60% at 78% 68%,rgba(80,40,8,.12),transparent 60%),
+             #221208;
 }
-#bsvg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+/* SVG ABOVE cards for string visibility */
+#bsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10}
 
-.cc {
-  position:absolute; width:162px;
-  background:var(--parch); color:var(--ink);
+.cc{
+  position:absolute;width:168px;
+  background:var(--parch);color:var(--ink);
   padding:.9rem .8rem .7rem;
-  cursor:grab; z-index:2; user-select:none;
-  box-shadow:4px 5px 16px rgba(0,0,0,.65);
+  cursor:grab;z-index:5;user-select:none;
+  box-shadow:4px 5px 16px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.4);
   transition:box-shadow .15s;
+  border-top:3px solid var(--gold-dim);
 }
-.cc:active { cursor:grabbing; z-index:20; }
-.cc.lk { filter:brightness(.5) saturate(.25); cursor:not-allowed; }
-.cc:not(.lk):hover { box-shadow:7px 7px 26px rgba(0,0,0,.85), 0 0 20px rgba(201,168,76,.12); z-index:15; }
-.pin {
-  position:absolute; top:-10px; left:50%; transform:translateX(-50%);
-  width:16px; height:16px; border-radius:50%;
-  background:radial-gradient(circle at 35% 30%, #e84040, #8b1a1a);
-  box-shadow:0 2px 7px rgba(0,0,0,.6); z-index:3;
-}
-.pin::after { content:''; position:absolute; bottom:-5px; left:50%; transform:translateX(-50%); width:2px; height:7px; background:rgba(110,20,20,.45); }
-.ctype { font-family:'Cinzel',serif; font-size:.48rem; letter-spacing:.18em; text-transform:uppercase; color:var(--blood); margin-bottom:.25rem; }
-.ctitle { font-family:'Cinzel',serif; font-size:.74rem; color:var(--ink); margin-bottom:.28rem; line-height:1.25; font-weight:600; }
-.cbody { font-size:.68rem; color:var(--ink2); line-height:1.4; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-.cfoot { display:flex; align-items:center; justify-content:space-between; margin-top:.4rem; padding-top:.32rem; border-top:1px solid rgba(0,0,0,.08); }
-.csrc { font-family:'Cinzel',serif; font-size:.46rem; color:var(--gold-dim); letter-spacing:.06em; }
-.cdots { display:flex; gap:2px; }
-.dot { width:5px; height:5px; border-radius:50%; background:rgba(0,0,0,.12); }
-.dot.on { background:var(--gold); }
+.cc:active{cursor:grabbing;z-index:20}
+.cc.lk{filter:brightness(.45) saturate(.2);cursor:not-allowed}
+.cc:not(.lk):hover{box-shadow:7px 9px 28px rgba(0,0,0,.8),0 0 22px rgba(201,168,76,.15);z-index:15}
+.pin{position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e84040,#8b1a1a);box-shadow:0 2px 7px rgba(0,0,0,.6);z-index:6}
+.pin::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:2px;height:8px;background:rgba(110,20,20,.4)}
+.ctype{font-family:'Cinzel',serif;font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;color:var(--blood);margin-bottom:.2rem}
+.ctitle{font-family:'Cinzel',serif;font-size:.72rem;color:var(--ink);margin-bottom:.28rem;line-height:1.25;font-weight:600}
+.cbody{font-size:.67rem;color:var(--ink2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.cfoot{display:flex;align-items:center;justify-content:space-between;margin-top:.4rem;padding-top:.32rem;border-top:1px solid rgba(0,0,0,.1)}
+.csrc{font-family:'Cinzel',serif;font-size:.44rem;color:var(--gold-dim);letter-spacing:.06em}
+.cdots{display:flex;gap:2px}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(0,0,0,.12)}
+.dot.on{background:var(--gold)}
+/* String mode: click card to start string */
+.cc.string-start{box-shadow:0 0 0 2px var(--bloodbr),7px 9px 28px rgba(0,0,0,.8)!important;z-index:15}
 
-#blegend {
-  position:absolute; bottom:1rem; right:1rem; z-index:5;
-  background:rgba(10,4,0,.8); border:1px solid rgba(201,168,76,.15);
-  padding:.65rem .9rem; backdrop-filter:blur(4px);
-}
-.ltitle { font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.2em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:.4rem; }
-.litem { display:flex; align-items:center; gap:.5rem; font-family:'Cinzel',serif; font-size:.52rem; color:var(--parch); margin-bottom:.2rem; }
-.lline { width:26px; height:2px; }
+#blegend{position:absolute;bottom:1rem;right:1rem;z-index:20;background:rgba(10,4,0,.85);border:1px solid rgba(201,168,76,.15);padding:.65rem .9rem;backdrop-filter:blur(4px)}
+.ltitle{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.2em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.4rem}
+.litem{display:flex;align-items:center;gap:.5rem;font-family:'Cinzel',serif;font-size:.52rem;color:var(--parch);margin-bottom:.2rem}
+.lline{width:26px;height:2px}
+
+#board-hint{position:absolute;top:.7rem;left:50%;transform:translateX(-50%);z-index:20;font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.15em;color:rgba(201,168,76,.4);background:rgba(0,0,0,.6);padding:.2rem .6rem;pointer-events:none;transition:opacity .5s}
 
 /* ── PALACE ── */
-#palace-panel { position:relative; overflow:hidden; background:#000; }
-#pal-canvas { width:100%; height:100%; display:block; cursor:grab; }
-#pal-canvas:active { cursor:grabbing; }
-#pal-hud { position:absolute; top:1rem; left:1rem; z-index:10; pointer-events:none; }
-.hudname { font-family:'Cinzel Decorative',serif; font-size:.9rem; color:var(--gold); text-shadow:0 0 22px rgba(201,168,76,.6); margin-bottom:.2rem; }
-.hudq { font-family:'Cinzel',serif; font-size:.58rem; color:rgba(201,168,76,.5); letter-spacing:.09em; max-width:260px; line-height:1.45; }
-#pal-rooms { position:absolute; bottom:1.2rem; left:50%; transform:translateX(-50%); display:flex; gap:.6rem; z-index:10; flex-wrap:wrap; justify-content:center; }
-.rbtn {
-  font-family:'Cinzel',serif; font-size:.58rem; letter-spacing:.12em; text-transform:uppercase;
-  padding:.48rem .9rem; border:1px solid var(--gold-dim); background:rgba(5,2,0,.85);
-  color:var(--gold-dim); cursor:pointer; transition:all .3s; backdrop-filter:blur(4px);
-}
-.rbtn.open { border-color:var(--gold); color:var(--gold); }
-.rbtn.open:hover { background:var(--gold); color:var(--ink); box-shadow:0 0 20px rgba(201,168,76,.4); }
-.rbtn.locked { opacity:.32; cursor:not-allowed; }
+#palace-panel{position:relative;overflow:hidden;background:#000}
+#pal-canvas{width:100%;height:100%;display:block;cursor:grab}
+#pal-canvas:active{cursor:grabbing}
+#pal-hud{position:absolute;top:1rem;left:1rem;z-index:10;pointer-events:none}
+.hudname{font-family:'Cinzel Decorative',serif;font-size:.9rem;color:var(--gold);text-shadow:0 0 22px rgba(201,168,76,.6);margin-bottom:.2rem}
+.hudq{font-family:'Cinzel',serif;font-size:.58rem;color:rgba(201,168,76,.5);letter-spacing:.09em;max-width:260px;line-height:1.45}
+#pal-rooms{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);display:flex;gap:.6rem;z-index:10;flex-wrap:wrap;justify-content:center}
+.rbtn{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.48rem .9rem;border:1px solid var(--gold-dim);background:rgba(5,2,0,.85);color:var(--gold-dim);cursor:pointer;transition:all .3s;backdrop-filter:blur(4px)}
+.rbtn.open{border-color:var(--gold);color:var(--gold)}
+.rbtn.open:hover{background:var(--gold);color:var(--ink);box-shadow:0 0 20px rgba(201,168,76,.4)}
+.rbtn.locked{opacity:.32;cursor:not-allowed}
 
-/* ── DIALOGUE ── */
-#dial-panel { display:none; flex-direction:column; position:relative; overflow:hidden; background:#080400; }
-#dial-panel.on { display:flex; }
+/* ═══════════════════════════════════
+   DIALOGUE — cinematic NPC scene
+═══════════════════════════════════ */
+#dial-panel{display:none;flex-direction:column;position:relative;overflow:hidden;background:#060300}
+#dial-panel.on{display:flex}
 
-#scene-bg {
-  position:absolute; inset:0; z-index:0;
-  background-size:cover; background-position:center 20%;
-  filter:brightness(.35) saturate(.8);
-  transition:opacity .9s ease;
-}
-#scene-grad {
-  position:absolute; inset:0; z-index:1; pointer-events:none;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.45) 0%, transparent 28%, transparent 52%, rgba(0,0,0,.9) 100%),
-    linear-gradient(90deg, rgba(0,0,0,.4) 0%, transparent 14%, transparent 86%, rgba(0,0,0,.4) 100%);
-}
-#mood-layer { position:absolute; inset:0; z-index:2; pointer-events:none; transition:background .8s ease; }
-.rays { position:absolute; top:0; left:50%; transform:translateX(-50%); width:70%; height:55%; z-index:2; pointer-events:none; opacity:0; transition:opacity 1.2s ease;
-  background: radial-gradient(ellipse 35% 100% at 35% 0%, rgba(255,215,100,.07), transparent 70%),
-              radial-gradient(ellipse 35% 100% at 65% 0%, rgba(255,200,80,.05), transparent 70%);
-}
-.rays.on { opacity:1; }
-#mood-badge {
-  position:absolute; top:.75rem; right:.9rem; z-index:20;
-  font-family:'Cinzel',serif; font-size:.48rem; letter-spacing:.18em; text-transform:uppercase;
-  padding:.18rem .5rem; border:1px solid rgba(201,168,76,.18);
-  color:rgba(201,168,76,.4); background:rgba(0,0,0,.55); backdrop-filter:blur(6px);
-  transition:all .5s;
+#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.32) saturate(.75);transition:background 1s ease}
+#scene-grad{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,transparent 25%,transparent 55%,rgba(0,0,0,.92) 100%),linear-gradient(90deg,rgba(0,0,0,.45) 0%,transparent 12%,transparent 88%,rgba(0,0,0,.45) 100%)}
+#mood-layer{position:absolute;inset:0;z-index:2;pointer-events:none;transition:background .8s ease}
+.rays{position:absolute;top:0;left:50%;transform:translateX(-50%);width:70%;height:55%;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.2s ease;background:radial-gradient(ellipse 35% 100% at 35% 0%,rgba(255,215,100,.08),transparent 70%),radial-gradient(ellipse 35% 100% at 65% 0%,rgba(255,200,80,.06),transparent 70%)}
+.rays.on{opacity:1}
+#mood-badge{position:absolute;top:.75rem;right:.9rem;z-index:20;font-family:'Cinzel',serif;font-size:.48rem;letter-spacing:.18em;text-transform:uppercase;padding:.18rem .5rem;border:1px solid rgba(201,168,76,.18);color:rgba(201,168,76,.4);background:rgba(0,0,0,.55);backdrop-filter:blur(6px);transition:all .5s}
+
+/* ── Two-figure scene (like the NotebookLM image) ── */
+.npc-scene{
+  flex-shrink:0;height:44%;min-height:200px;
+  position:relative;z-index:5;
+  display:flex;align-items:flex-end;justify-content:center;
+  overflow:hidden;
 }
 
-.npc-scene {
-  flex-shrink:0; height:42%; min-height:180px;
-  position:relative; z-index:5;
-  display:flex; align-items:flex-end; justify-content:center; overflow:hidden;
-}
-.pillar {
-  position:absolute; bottom:0; z-index:4;
-  background:linear-gradient(90deg, rgba(60,35,12,.95), rgba(40,22,6,.98), rgba(60,35,12,.95));
-  border-left:1px solid rgba(201,168,76,.05);
-}
-.pillar::before { content:''; position:absolute; top:0; left:0; right:0; height:10px; background:rgba(201,168,76,.06); }
+/* Architectural pillars */
+.pillar{position:absolute;bottom:0;z-index:4;background:linear-gradient(90deg,rgba(70,40,12,.92),rgba(45,25,6,.98),rgba(70,40,12,.92));border-left:1px solid rgba(201,168,76,.04)}
+.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:12px;background:rgba(201,168,76,.07)}
+.pillar::after{content:'';position:absolute;top:12px;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(0,0,0,.06) 18px,rgba(0,0,0,.06) 19px)}
 
-.npc-fig { position:relative; z-index:6; display:flex; flex-direction:column; align-items:center; padding-bottom:.6rem; }
-.npc-av { position:relative; width:70px; height:178px; }
+/* Floor glow */
+.floor-glow{position:absolute;bottom:0;left:0;right:0;height:60px;z-index:3;background:linear-gradient(0deg,rgba(201,168,76,.06),transparent);pointer-events:none}
 
-.npc-robe {
-  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-  width:64px; height:140px;
-  background:linear-gradient(180deg, var(--npc) 0%, rgba(0,0,0,.6) 100%);
-  clip-path:polygon(37% 0%, 63% 0%, 72% 9%, 82% 100%, 18% 100%, 28% 9%);
-  filter:drop-shadow(0 0 20px var(--npcg));
+/* Table in center */
+.scene-table{
+  position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:280px;height:55px;z-index:5;
+  background:linear-gradient(180deg,#5a3010,#3a1e08);
+  border-top:3px solid #8a5520;
+  box-shadow:0 8px 30px rgba(0,0,0,.7);
+}
+.scene-table::before{content:'';position:absolute;inset:4px 8px;background:rgba(201,168,76,.04);border:1px solid rgba(201,168,76,.1)}
+/* Scroll/parchment on table */
+.scene-scroll{
+  position:absolute;top:-28px;left:50%;transform:translateX(-50%);
+  width:220px;height:32px;
+  background:linear-gradient(180deg,#e8d5a0,#d4bc7a,#c4a860);
+  border:1px solid rgba(100,60,10,.5);
+  box-shadow:0 4px 15px rgba(0,0,0,.5);
+}
+.scene-scroll::before{content:'';position:absolute;left:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,#b8956a,#d4bc7a);border-right:1px solid rgba(100,60,10,.3)}
+.scene-scroll::after{content:'';position:absolute;right:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,#d4bc7a,#b8956a);border-left:1px solid rgba(100,60,10,.3)}
+
+/* Figure base class */
+.fig{
+  position:absolute;bottom:55px;z-index:6;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;
+}
+
+/* Figure body — robe */
+.fig-body{
+  width:70px;height:155px;position:relative;
   animation:breathe 4s ease-in-out infinite;
 }
-.npc-robe::before {
-  content:''; position:absolute; inset:6px 14px;
-  background:linear-gradient(180deg, rgba(255,255,255,.1), transparent 55%);
-  clip-path:polygon(30% 0%, 70% 0%, 65% 100%, 35% 100%);
+.fig-robe{
+  position:absolute;inset:0;
+  clip-path:polygon(38% 0%,62% 0%,70% 8%,80% 100%,20% 100%,30% 8%);
+  transition:background .6s ease;
 }
-.npc-head {
-  position:absolute; bottom:133px; left:50%; transform:translateX(-50%);
-  width:40px; height:40px; border-radius:50%;
-  background:radial-gradient(circle at 35% 30%, rgba(255,225,185,.9), var(--npc) 65%, rgba(0,0,0,.5));
-  box-shadow:0 0 24px var(--npcg), 0 0 50px var(--npcg);
+.fig-robe::before{content:'';position:absolute;inset:8px 18px;clip-path:polygon(30% 0%,70% 0%,65% 100%,35% 100%);background:linear-gradient(180deg,rgba(255,255,255,.12),transparent 60%)}
+/* Arm gestures */
+.fig-arm-l{position:absolute;bottom:55px;left:14px;width:20px;height:55px;transform-origin:top center;transform:rotate(-18deg);border-radius:10px;transition:background .6s}
+.fig-arm-r{position:absolute;bottom:55px;right:14px;width:20px;height:55px;transform-origin:top center;transform:rotate(18deg);border-radius:10px;transition:background .6s}
+
+/* Head */
+.fig-head{
+  width:42px;height:42px;border-radius:50%;
+  position:absolute;top:-50px;left:50%;transform:translateX(-50%);
+  box-shadow:0 0 20px var(--npcg),0 0 40px var(--npcg);
   animation:breathe 4s ease-in-out infinite;
+  transition:box-shadow .6s,background .6s;
 }
-.npc-head::after { content:''; position:absolute; bottom:0; left:18%; right:18%; height:38%; background:rgba(0,0,0,.22); border-radius:0 0 50% 50%; }
-.npc-halo {
-  position:absolute; bottom:145px; left:50%; transform:translateX(-50%);
-  width:50px; height:50px; border-radius:50%;
-  border:1px solid rgba(201,168,76,0); transition:all .8s ease; pointer-events:none;
-}
-.npc-halo.on { border-color:rgba(201,168,76,.38); box-shadow:0 0 18px rgba(201,168,76,.3); animation:halo 3s ease-in-out infinite; }
-@keyframes halo { 0%,100%{opacity:.55} 50%{opacity:1} }
-@keyframes breathe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+.fig-head::after{content:'';position:absolute;bottom:2px;left:20%;right:20%;height:35%;background:rgba(0,0,0,.2);border-radius:0 0 50% 50%}
 
-.npc-glow-floor {
-  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
-  width:200px; height:55px; pointer-events:none; z-index:5;
-  background:radial-gradient(ellipse, var(--npcg) 0%, transparent 70%);
-  transition:background .6s;
+/* Halo (temple theme) */
+.fig-halo{
+  position:absolute;top:-62px;left:50%;transform:translateX(-50%);
+  width:54px;height:54px;border-radius:50%;
+  border:1px solid rgba(201,168,76,0);
+  pointer-events:none;transition:all .8s ease;
 }
-.npc-name {
-  font-family:'Cinzel',serif; font-size:.65rem; letter-spacing:.22em;
-  color:var(--npc); text-align:center;
-  text-shadow:0 0 18px var(--npcg), 0 2px 4px rgba(0,0,0,.9);
-  padding-bottom:.25rem; position:relative; z-index:6;
-}
-.npc-name::before {
-  content:''; display:block; width:38px; height:1px;
-  margin:0 auto .35rem;
-  background:linear-gradient(90deg, transparent, var(--npc), transparent); opacity:.5;
-}
+.fig-halo.on{border-color:rgba(201,168,76,.45);box-shadow:0 0 18px rgba(201,168,76,.35);animation:halo-pulse 3s ease-in-out infinite}
+@keyframes halo-pulse{0%,100%{opacity:.5}50%{opacity:1}}
 
-.chat-wrap {
-  flex:1; display:flex; flex-direction:column;
-  position:relative; z-index:10; min-height:0;
-  background:linear-gradient(180deg, rgba(8,4,0,0) 0%, rgba(8,4,0,.94) 10%);
+/* Beard / hair details */
+.fig-hair{position:absolute;top:-2px;left:50%;transform:translateX(-50%);width:36px;height:18px;border-radius:50% 50% 0 0;opacity:.7;transition:background .6s}
+.fig-beard{position:absolute;bottom:-10px;left:50%;transform:translateX(-50%);width:22px;height:16px;border-radius:0 0 50% 50%;opacity:.6;transition:background .6s}
+
+/* Figure glow on floor */
+.fig-glow{position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:100px;height:30px;border-radius:50%;background:radial-gradient(ellipse,var(--npcg) 0%,transparent 70%);transition:background .6s;pointer-events:none}
+
+/* Name label under figure */
+.fig-label{
+  position:absolute;bottom:-28px;left:50%;transform:translateX(-50%);
+  font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.18em;
+  white-space:nowrap;
+  text-shadow:0 0 14px var(--npcg),0 2px 4px rgba(0,0,0,.9);
+  transition:color .6s;
 }
-.chat-area {
-  flex:1; overflow-y:auto; padding:.9rem 1.2rem;
-  display:flex; flex-direction:column; gap:.65rem;
-  scroll-behavior:smooth; min-height:0;
-}
-.msg { max-width:72%; animation:min .3s ease; }
-@keyframes min { from{opacity:0;transform:translateY(7px)} to{opacity:1;transform:translateY(0)} }
-.msg.npc { align-self:flex-start; }
-.msg.usr { align-self:flex-end; }
-.mwho { font-family:'Cinzel',serif; font-size:.48rem; letter-spacing:.18em; text-transform:uppercase; margin-bottom:.2rem; }
-.msg.npc .mwho { color:var(--npc); }
-.msg.usr .mwho { color:var(--gold-dim); text-align:right; }
-.mbody { padding:.68rem .95rem; font-size:.9rem; line-height:1.68; }
-.msg.npc .mbody { background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.07); border-left:2px solid var(--npc); color:var(--parch); font-style:italic; backdrop-filter:blur(8px); }
-.msg.usr .mbody { background:rgba(201,168,76,.06); border:1px solid rgba(201,168,76,.14); color:var(--parch); backdrop-filter:blur(6px); }
+.fig-label::before{content:'';display:block;width:30px;height:1px;margin:0 auto .3rem;background:linear-gradient(90deg,transparent,var(--npc),transparent);opacity:.5}
 
-.typing { display:none; align-self:flex-start; }
-.typing.on { display:flex; }
-.tybubble { background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.07); border-left:2px solid var(--npc); padding:.65rem 1rem; display:flex; gap:4px; align-items:center; backdrop-filter:blur(8px); }
-.tydot { width:6px; height:6px; border-radius:50%; background:var(--npc); opacity:.4; animation:ty 1.2s ease-in-out infinite; }
-.tydot:nth-child(2){animation-delay:.2s} .tydot:nth-child(3){animation-delay:.4s}
-@keyframes ty { 0%,100%{opacity:.3;transform:translateY(0)} 50%{opacity:1;transform:translateY(-3px)} }
+@keyframes breathe{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
-.sugs { padding:.45rem 1.2rem; display:flex; gap:.4rem; flex-wrap:wrap; border-top:1px solid rgba(201,168,76,.06); flex-shrink:0; background:rgba(0,0,0,.55); }
-.sug { font-family:'Cinzel',serif; font-size:.52rem; letter-spacing:.08em; color:rgba(201,168,76,.5); border:1px solid rgba(201,168,76,.14); padding:.25rem .6rem; cursor:pointer; transition:all .2s; background:transparent; }
-.sug:hover { border-color:var(--gold); color:var(--gold); background:rgba(201,168,76,.06); }
+/* Figure positioning */
+.fig-left{left:calc(50% - 180px)}
+.fig-right{right:calc(50% - 180px)}
+.fig-right .fig-robe{transform:scaleX(-1)}
+.fig-right .fig-arm-l{transform:rotate(18deg)}
+.fig-right .fig-arm-r{transform:rotate(-18deg)}
+.fig-right .fig-label{left:auto;right:50%;transform:translateX(50%)}
 
-.cin-row { display:flex; border-top:1px solid rgba(201,168,76,.08); flex-shrink:0; background:rgba(0,0,0,.75); backdrop-filter:blur(12px); }
-#cin { flex:1; background:transparent; border:none; outline:none; color:var(--parch); font-family:'Crimson Text','Times New Roman',Georgia,serif; font-size:1rem; padding:.85rem 1.1rem; }
-#cin::placeholder { color:rgba(201,168,76,.2); font-style:italic; }
-#csend { font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink); background:var(--gold); border:none; padding:0 1.3rem; cursor:pointer; transition:all .2s; flex-shrink:0; }
-#csend:hover { background:var(--gold-lt); }
-#csend:disabled { opacity:.4; cursor:not-allowed; }
-.no-room-msg { padding:3rem 2rem; text-align:center; font-family:'Cinzel',serif; font-size:.7rem; letter-spacing:.2em; color:rgba(201,168,76,.3); line-height:2; }
-@keyframes rf { 0%{background:rgba(201,168,76,0)} 25%{background:rgba(201,168,76,.08)} 100%{background:rgba(201,168,76,0)} }
-.rflash { animation:rf 2s ease forwards; }
+/* Active speaker highlight */
+.fig.speaking .fig-head{box-shadow:0 0 30px var(--npcg),0 0 60px var(--npcg)!important}
+.fig.speaking .fig-robe{filter:brightness(1.2)}
+
+/* ── Chat ── */
+.chat-wrap{flex:1;display:flex;flex-direction:column;position:relative;z-index:10;min-height:0;background:linear-gradient(180deg,rgba(6,3,0,0) 0%,rgba(6,3,0,.95) 8%)}
+.chat-area{flex:1;overflow-y:auto;padding:.9rem 1.2rem;display:flex;flex-direction:column;gap:.65rem;scroll-behavior:smooth;min-height:0}
+.msg{max-width:70%;animation:msgin .3s ease}
+@keyframes msgin{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.msg.npc{align-self:flex-start}
+.msg.usr{align-self:flex-end}
+.mwho{font-family:'Cinzel',serif;font-size:.46rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:.2rem}
+.msg.npc .mwho{color:var(--npc)}
+.msg.usr .mwho{color:var(--gold-dim);text-align:right}
+.mbody{padding:.65rem .9rem;font-size:.9rem;line-height:1.7}
+.msg.npc .mbody{background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.06);border-left:2px solid var(--npc);color:var(--parch);font-style:italic;backdrop-filter:blur(8px)}
+.msg.usr .mbody{background:rgba(201,168,76,.06);border:1px solid rgba(201,168,76,.14);color:var(--parch);backdrop-filter:blur(6px)}
+.typing{display:none;align-self:flex-start}
+.typing.on{display:flex}
+.tybubble{background:rgba(0,0,0,.52);border:1px solid rgba(255,255,255,.06);border-left:2px solid var(--npc);padding:.65rem 1rem;display:flex;gap:4px;align-items:center;backdrop-filter:blur(8px)}
+.tydot{width:6px;height:6px;border-radius:50%;background:var(--npc);opacity:.4;animation:ty 1.2s ease-in-out infinite}
+.tydot:nth-child(2){animation-delay:.2s}.tydot:nth-child(3){animation-delay:.4s}
+@keyframes ty{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.sugs{padding:.45rem 1.2rem;display:flex;gap:.4rem;flex-wrap:wrap;border-top:1px solid rgba(201,168,76,.06);flex-shrink:0;background:rgba(0,0,0,.58)}
+.sug{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.08em;color:rgba(201,168,76,.5);border:1px solid rgba(201,168,76,.14);padding:.25rem .6rem;cursor:pointer;transition:all .2s;background:transparent}
+.sug:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
+.cin-row{display:flex;border-top:1px solid rgba(201,168,76,.08);flex-shrink:0;background:rgba(0,0,0,.78);backdrop-filter:blur(12px)}
+#cin{flex:1;background:transparent;border:none;outline:none;color:var(--parch);font-family:'Crimson Text',serif;font-size:1rem;padding:.85rem 1.1rem}
+#cin::placeholder{color:rgba(201,168,76,.2);font-style:italic}
+#csend{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:0 1.3rem;cursor:pointer;transition:all .2s;flex-shrink:0}
+#csend:hover{background:var(--gold-lt)}
+#csend:disabled{opacity:.4;cursor:not-allowed}
+.no-room-msg{padding:3rem 2rem;text-align:center;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;color:rgba(201,168,76,.3);line-height:2}
+@keyframes rf{0%{background:rgba(201,168,76,0)}25%{background:rgba(201,168,76,.08)}100%{background:rgba(201,168,76,0)}}
+.rflash{animation:rf 2s ease forwards}
 
 /* ── VERDICT ── */
-#verd-panel { padding:2rem; max-width:720px; margin:0 auto; overflow:auto; }
-.vseal { width:72px; height:72px; border:2px solid var(--gold); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin:1rem auto 1.3rem; box-shadow:0 0 28px rgba(201,168,76,.22); }
-.vtitle { font-family:'Cinzel Decorative',serif; font-size:clamp(1rem,3vw,1.6rem); color:var(--gold); text-align:center; letter-spacing:.1em; }
-.vstamp { display:table; margin:.8rem auto; font-family:'Cinzel',serif; font-size:.88rem; letter-spacing:.32em; text-transform:uppercase; border:3px solid var(--bloodbr); color:var(--bloodbr); padding:.36rem 1.5rem; transform:rotate(-2.5deg); box-shadow:0 0 14px rgba(192,57,43,.2); transition:all .5s; }
-.vstamp.done { border-color:#4a9a4a; color:#4a9a4a; box-shadow:0 0 18px rgba(74,154,74,.22); }
-.vgrid { display:grid; grid-template-columns:1fr 1fr; gap:.85rem; margin-top:1.3rem; }
-.vcard { border:1px solid rgba(201,168,76,.14); padding:.85rem; background:rgba(0,0,0,.22); }
-.vrole { font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.18em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:.22rem; }
-.vname { font-size:.95rem; font-weight:600; margin-bottom:.16rem; }
-.vwork { font-size:.78rem; color:var(--gold-dim); font-style:italic; }
-.vsyn { margin-top:1.3rem; border:1px solid rgba(201,168,76,.17); padding:1.3rem; background:rgba(0,0,0,.18); position:relative; }
-.vsyn::before { content:'ΤΕΛΙΚΗ ΣΥΝΘΕΣΗ'; position:absolute; top:-.55rem; left:.85rem; background:var(--wood); padding:0 .4rem; font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.22em; color:var(--gold); }
-.vsyn p { font-size:.9rem; line-height:1.8; }
+#verd-panel{padding:2rem;max-width:720px;margin:0 auto;overflow:auto}
+.vseal{width:72px;height:72px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:1rem auto 1.3rem;box-shadow:0 0 28px rgba(201,168,76,.22)}
+.vtitle{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,3vw,1.6rem);color:var(--gold);text-align:center;letter-spacing:.1em}
+.vstamp{display:table;margin:.8rem auto;font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:.32em;text-transform:uppercase;border:3px solid var(--bloodbr);color:var(--bloodbr);padding:.36rem 1.5rem;transform:rotate(-2.5deg);box-shadow:0 0 14px rgba(192,57,43,.2);transition:all .5s}
+.vstamp.done{border-color:#4a9a4a;color:#4a9a4a;box-shadow:0 0 18px rgba(74,154,74,.22)}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:1.3rem}
+.vcard{border:1px solid rgba(201,168,76,.14);padding:.85rem;background:rgba(0,0,0,.22)}
+.vrole{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.18em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.22rem}
+.vname{font-size:.95rem;font-weight:600;margin-bottom:.16rem}
+.vwork{font-size:.78rem;color:var(--gold-dim);font-style:italic}
+.vsyn{margin-top:1.3rem;border:1px solid rgba(201,168,76,.17);padding:1.3rem;background:rgba(0,0,0,.18);position:relative}
+.vsyn::before{content:'ΤΕΛΙΚΗ ΣΥΝΘΕΣΗ';position:absolute;top:-.55rem;left:.85rem;background:var(--wood);padding:0 .4rem;font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.22em;color:var(--gold)}
+.vsyn p{font-size:.9rem;line-height:1.8}
 
-/* MODAL */
-#modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,.78); z-index:5000; align-items:center; justify-content:center; backdrop-filter:blur(6px); }
-#modal.on { display:flex; }
-.mbox { background:var(--parch); color:var(--ink); width:min(540px,92vw); max-height:80vh; overflow-y:auto; padding:2.2rem; position:relative; box-shadow:0 0 80px rgba(0,0,0,.85); animation:pop .25s ease; }
-@keyframes pop { from{opacity:0;transform:scale(.9) translateY(16px)} to{opacity:1;transform:scale(1) translateY(0)} }
-.mstamp { position:absolute; top:1.3rem; right:1.3rem; font-family:'Cinzel',serif; font-size:.5rem; letter-spacing:.18em; border:2px solid var(--blood); color:var(--blood); padding:.12rem .4rem; transform:rotate(6deg); text-transform:uppercase; }
-.mtype { font-family:'Cinzel',serif; font-size:.55rem; letter-spacing:.22em; color:var(--blood); text-transform:uppercase; margin-bottom:.5rem; }
-.mtitle { font-family:'Cinzel',serif; font-size:1.2rem; color:var(--ink); margin-bottom:.7rem; line-height:1.3; }
-.mhr { height:1px; background:linear-gradient(90deg, var(--gold-dim), transparent); margin-bottom:.7rem; }
-.mbodytxt { font-size:.95rem; line-height:1.75; font-style:italic; color:var(--ink2); margin-bottom:1rem; }
-.mfoot { font-family:'Cinzel',serif; font-size:.58rem; color:var(--gold-dim); letter-spacing:.08em; border-top:1px solid rgba(0,0,0,.07); padding-top:.7rem; }
-.mclose { position:absolute; top:.85rem; left:.85rem; background:none; border:none; font-size:1rem; color:var(--ink2); cursor:pointer; }
-.mclose:hover { color:var(--blood); }
-#mchat { margin-top:.85rem; font-family:'Cinzel',serif; font-size:.6rem; letter-spacing:.13em; text-transform:uppercase; color:#4a9a8a; border:1px solid rgba(74,154,138,.35); background:transparent; padding:.44rem .85rem; cursor:pointer; transition:all .2s; }
-#mchat:hover { background:rgba(74,154,138,.09); }
+/* ── MODAL ── */
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:5000;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+#modal.on{display:flex}
+.mbox{background:var(--parch);color:var(--ink);width:min(540px,92vw);max-height:80vh;overflow-y:auto;padding:2.2rem;position:relative;box-shadow:0 0 80px rgba(0,0,0,.85);animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(16px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.mstamp{position:absolute;top:1.3rem;right:1.3rem;font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.18em;border:2px solid var(--blood);color:var(--blood);padding:.12rem .4rem;transform:rotate(6deg);text-transform:uppercase}
+.mtype{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.22em;color:var(--blood);text-transform:uppercase;margin-bottom:.5rem}
+.mtitle{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--ink);margin-bottom:.7rem;line-height:1.3}
+.mhr{height:1px;background:linear-gradient(90deg,var(--gold-dim),transparent);margin-bottom:.7rem}
+.mbodytxt{font-size:.95rem;line-height:1.75;font-style:italic;color:var(--ink2);margin-bottom:1rem}
+.mfoot{font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-dim);letter-spacing:.08em;border-top:1px solid rgba(0,0,0,.07);padding-top:.7rem}
+.mclose{position:absolute;top:.85rem;left:.85rem;background:none;border:none;font-size:1rem;color:var(--ink2);cursor:pointer}
+.mclose:hover{color:var(--blood)}
+#mchat{margin-top:.85rem;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:#4a9a8a;border:1px solid rgba(74,154,138,.35);background:transparent;padding:.44rem .85rem;cursor:pointer;transition:all .2s}
+#mchat:hover{background:rgba(74,154,138,.09)}
 
-::-webkit-scrollbar { width:4px; height:4px; }
-::-webkit-scrollbar-track { background:var(--wood); }
-::-webkit-scrollbar-thumb { background:var(--gold-dim); border-radius:2px; }
-::-webkit-scrollbar-thumb:hover { background:var(--gold); }
-@media(max-width:480px) { .cc{width:140px} .vgrid{grid-template-columns:1fr} #pal-rooms{flex-wrap:wrap;justify-content:center} }
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--wood)}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}
+@media(max-width:480px){.cc{width:140px}.vgrid{grid-template-columns:1fr}.fig-left{left:calc(50% - 130px)}.fig-right{right:calc(50% - 130px)}}
 </style>
 </head>
 <body>
@@ -382,23 +339,23 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','T
   <div class="s-title">Mind Palace</div>
   <div class="s-sub">Η Υπόθεση του Φιλοσόφου</div>
   <div class="s-form">
-    <div class="s-sep"><span>φορτωση υποθεσης</span></div>
+    <div class="s-sep"><span>φόρτωση υπόθεσης</span></div>
     <div class="s-lbl">GitHub Raw URL</div>
     <input type="text" id="inp-url" placeholder="https://raw.githubusercontent.com/.../case.json"/>
-    <div class="s-lbl">η Case ID</div>
+    <div class="s-lbl">ή Case ID</div>
     <input type="text" id="inp-id" placeholder="π.χ. plato-origen"/>
-    <button class="btn-g" onclick="doLoad()">Εισελθετε στο Palace</button>
-    <button class="btn-o" onclick="loadDemo()">Demo (χωρις GitHub)</button>
+    <button class="btn-g" onclick="doLoad()">✦ Εισέλθετε στο Palace ✦</button>
+    <button class="btn-o" onclick="loadDemo()">→ Demo (χωρίς GitHub)</button>
   </div>
 </div>
 
 <!-- LOADING -->
-<div id="loading"><div class="spin"></div><div class="load-txt">Φορτωνει...</div></div>
+<div id="loading"><div class="spin"></div><div class="load-txt">Φορτώνει...</div></div>
 
 <!-- APP -->
 <div id="app">
   <div id="hdr">
-    <div class="hbrand"><div class="hicon">H</div><div class="hname">Mind Palace</div></div>
+    <div class="hbrand"><div class="hicon">🏛</div><div class="hname">Mind Palace</div></div>
     <div class="hcase" id="hcase">—</div>
     <div class="hright">
       <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
@@ -407,29 +364,30 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','T
     </div>
   </div>
   <div id="tabs">
-    <button class="tab on" onclick="goTab('board',this)">Πινακας Ερευνας</button>
-    <button class="tab" onclick="goTab('palace',this)">Mind Palace 3D</button>
-    <button class="tab" id="tdial" onclick="goTab('dial',this)">Διαλογος NPC</button>
-    <button class="tab" onclick="goTab('verd',this)">Συνθεση</button>
+    <button class="tab on" onclick="goTab('board',this)">🔍 Πίνακας Έρευνας</button>
+    <button class="tab" onclick="goTab('palace',this)">🏛 Mind Palace 3D</button>
+    <button class="tab" id="tdial" onclick="goTab('dial',this)">💬 Διάλογος</button>
+    <button class="tab" onclick="goTab('verd',this)">⚖ Σύνθεση</button>
   </div>
   <div id="content">
 
     <!-- BOARD -->
     <div class="panel on" id="board-panel">
+      <div id="board-hint">Κλικ σε κάρτα για άνοιγμα · Σύρε για μετακίνηση</div>
       <svg id="bsvg"></svg>
       <div id="blegend">
-        <div class="ltitle">Συνδεσμοι</div>
-        <div class="litem"><div class="lline" style="background:#c0392b"></div>Αντιθεση</div>
-        <div class="litem"><div class="lline" style="background:#4a9a4a"></div>Συμφωνια</div>
-        <div class="litem"><div class="lline" style="background:#c9a84c;border-top:2px dashed #c9a84c;height:0"></div>Εξελιξη</div>
+        <div class="ltitle">Σύνδεσμοι</div>
+        <div class="litem"><div class="lline" style="background:#c0392b"></div>Αντίθεση</div>
+        <div class="litem"><div class="lline" style="background:#4a9a4a"></div>Συμφωνία</div>
+        <div class="litem"><div class="lline" style="background:#c9a84c;border-top:2px dashed #c9a84c;height:0"></div>Εξέλιξη</div>
       </div>
     </div>
 
     <!-- PALACE -->
     <div class="panel" id="palace-panel">
       <div id="pal-hud">
-        <div class="hudname" id="hudname">Εξερευνηστε το Palace</div>
-        <div class="hudq" id="hudq">Συρετε για περιστροφη - Επιλεξτε δωματιο παρακατω</div>
+        <div class="hudname" id="hudname">Εξερευνήστε το Palace</div>
+        <div class="hudq" id="hudq">Σύρετε για περιστροφή · Επιλέξτε δωμάτιο παρακάτω</div>
       </div>
       <canvas id="pal-canvas"></canvas>
       <div id="pal-rooms"></div>
@@ -441,31 +399,59 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','T
       <div id="scene-grad"></div>
       <div id="mood-layer"></div>
       <div class="rays" id="rays"></div>
-      <div id="mood-badge">Αναμονη</div>
+      <div id="mood-badge">● Αναμονή</div>
+
       <div class="npc-scene">
-        <div class="pillar" style="left:4%;width:30px;height:88%"></div>
-        <div class="pillar" style="left:11%;width:20px;height:68%"></div>
-        <div class="pillar" style="right:4%;width:30px;height:88%"></div>
-        <div class="pillar" style="right:11%;width:20px;height:68%"></div>
-        <div class="npc-glow-floor" id="npcglow"></div>
-        <div class="npc-fig">
-          <div class="npc-av">
-            <div class="npc-halo" id="npchalo"></div>
-            <div class="npc-head" id="npchead"></div>
-            <div class="npc-robe" id="npcrobe"></div>
+        <!-- Pillars -->
+        <div class="pillar" style="left:3%;width:32px;height:90%"></div>
+        <div class="pillar" style="left:10%;width:22px;height:70%"></div>
+        <div class="pillar" style="right:3%;width:32px;height:90%"></div>
+        <div class="pillar" style="right:10%;width:22px;height:70%"></div>
+        <div class="floor-glow"></div>
+
+        <!-- Table with scroll -->
+        <div class="scene-table"><div class="scene-scroll"></div></div>
+
+        <!-- Figure LEFT (figure 1 / older philosopher) -->
+        <div class="fig fig-left" id="fig-left">
+          <div class="fig-body">
+            <div class="fig-halo" id="halo-left"></div>
+            <div class="fig-head" id="head-left"></div>
+            <div class="fig-hair" id="hair-left"></div>
+            <div class="fig-beard" id="beard-left"></div>
+            <div class="fig-robe" id="robe-left"></div>
+            <div class="fig-arm-l" id="arml-left"></div>
+            <div class="fig-arm-r" id="armr-left"></div>
           </div>
-          <div class="npc-name" id="npcname">—</div>
+          <div class="fig-glow" id="glow-left"></div>
+          <div class="fig-label" id="label-left">—</div>
+        </div>
+
+        <!-- Figure RIGHT (figure 2 / younger) -->
+        <div class="fig fig-right" id="fig-right">
+          <div class="fig-body">
+            <div class="fig-halo" id="halo-right"></div>
+            <div class="fig-head" id="head-right"></div>
+            <div class="fig-hair" id="hair-right"></div>
+            <div class="fig-beard" id="beard-right"></div>
+            <div class="fig-robe" id="robe-right"></div>
+            <div class="fig-arm-l" id="arml-right"></div>
+            <div class="fig-arm-r" id="armr-right"></div>
+          </div>
+          <div class="fig-glow" id="glow-right"></div>
+          <div class="fig-label" id="label-right">—</div>
         </div>
       </div>
+
       <div class="chat-wrap">
         <div class="chat-area" id="chat">
-          <div class="no-room-msg" id="noroom">Ανοιξτε ενα δωματιο<br>απο το Mind Palace 3D<br>για να ξεκινησει ο διαλογος</div>
+          <div class="no-room-msg" id="noroom">Ανοίξτε ένα δωμάτιο<br>από το Mind Palace 3D<br>για να ξεκινήσει ο διάλογος</div>
           <div class="typing" id="typing"><div class="tybubble"><div class="tydot"></div><div class="tydot"></div><div class="tydot"></div></div></div>
         </div>
         <div class="sugs" id="sugs"></div>
         <div class="cin-row">
-          <input id="cin" placeholder="Μιληστε με τον φιλοσοφο..." onkeydown="if(event.key==='Enter')send()"/>
-          <button id="csend" onclick="send()">Αποστολη</button>
+          <input id="cin" placeholder="Μιλήστε με τον φιλόσοφο..." onkeydown="if(event.key==='Enter')send()"/>
+          <button id="csend" onclick="send()">Αποστολή →</button>
         </div>
       </div>
     </div>
@@ -473,10 +459,10 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','T
     <!-- VERDICT -->
     <div class="panel" id="verd-panel">
       <div class="vseal">⚖</div>
-      <div class="vtitle" id="vtitle">Τελικη Συνθεση</div>
-      <div class="vstamp" id="vstamp">Υποθεση Εκκρεμει</div>
+      <div class="vtitle" id="vtitle">Τελική Σύνθεση</div>
+      <div class="vstamp" id="vstamp">Υπόθεση Εκκρεμεί</div>
       <div class="vgrid" id="vgrid"></div>
-      <div class="vsyn"><p id="vsynp">Ολοκληρωστε τους διαλογους για να αποκαλυφθει η φιλοσοφικη συνθεση.</p></div>
+      <div class="vsyn"><p id="vsynp">Ολοκληρώστε τους διαλόγους για να αποκαλυφθεί η φιλοσοφική σύνθεση.</p></div>
     </div>
   </div>
 </div>
@@ -484,153 +470,223 @@ body { background:var(--wood); color:var(--parch); font-family:'Crimson Text','T
 <!-- MODAL -->
 <div id="modal">
   <div class="mbox">
-    <button class="mclose" onclick="closeModal()">x</button>
-    <div class="mstamp" id="mstamp">Πειστηριο</div>
+    <button class="mclose" onclick="closeModal()">✕</button>
+    <div class="mstamp" id="mstamp">Πειστήριο</div>
     <div class="mtype" id="mtype"></div>
     <div class="mtitle" id="mtitle"></div>
     <div class="mhr"></div>
     <div class="mbodytxt" id="mbodytxt"></div>
     <div class="mfoot" id="mfoot"></div>
-    <button id="mchat" onclick="chatClue()">Ρωτηστε τον φιλοσοφο</button>
+    <button id="mchat" onclick="chatClue()">💬 Ρωτήστε τον φιλόσοφο →</button>
   </div>
 </div>
 
 <script>
-/* ── CONFIG (από inline block παραπάνω) ── */
-const KEY  = (window.MP_CONFIG && window.MP_CONFIG.GEMINI_KEY)  || '';
-const REPO = (window.MP_CONFIG && window.MP_CONFIG.REPO_BASE)   || '';
+/* ── CONFIG ── */
+const KEY  = (window.MP_CONFIG||{}).GEMINI_KEY  || '';
+const REPO = (window.MP_CONFIG||{}).REPO_BASE   || '';
 
 /* ── STATE ── */
-const S = {
-  d:null, unlocked:new Set(), rooms:new Set(), revelations:new Set(),
-  curRoom:null, curClue:null, hist:[], mood:'neutral', mem:{}, three:null
-};
+const S={d:null,unlocked:new Set(),rooms:new Set(),revelations:new Set(),curRoom:null,curClue:null,hist:[],mood:'neutral',mem:{},three:null};
 
 /* ── THEMES ── */
-const TH = {
-  library: { col:'#c9a84c', glow:'rgba(201,168,76,.5)', bg:'assets/bg-library.jpg', grad:'linear-gradient(160deg,#1a0e04,#2d1a08,#1a0e04)', rays:false, badge:'Βιβλιοθηκη' },
-  temple:  { col:'#a8c4e0', glow:'rgba(168,196,224,.5)', bg:'assets/bg-temple.jpg',  grad:'linear-gradient(160deg,#060a12,#0e1825,#060a12)', rays:true,  badge:'Ναος' },
-  cave:    { col:'#9a7acc', glow:'rgba(154,122,204,.5)', bg:'assets/bg-cave.jpg',    grad:'linear-gradient(160deg,#090612,#160e25,#090612)', rays:false, badge:'Σπηλαιο' },
-  agora:   { col:'#9aad7a', glow:'rgba(154,173,122,.5)', bg:'assets/bg-agora.jpg',   grad:'linear-gradient(160deg,#0a1205,#162012,#0a1205)', rays:false, badge:'Αγορα' }
+const TH={
+  library:{col:'#c9a84c',glow:'rgba(201,168,76,.5)',bg:'assets/bg-library.jpg',grad:'linear-gradient(160deg,#1a0e04,#2d1a08 50%,#1a0e04)',rays:false,badge:'📚 Βιβλιοθήκη'},
+  temple: {col:'#b8d0ee',glow:'rgba(184,208,238,.5)',bg:'assets/bg-temple.jpg', grad:'linear-gradient(160deg,#060a14,#0e1a2e 50%,#060a14)',rays:true, badge:'🏛 Ναός'},
+  cave:   {col:'#9a7acc',glow:'rgba(154,122,204,.5)',bg:'assets/bg-cave.jpg',   grad:'linear-gradient(160deg,#090612,#160e25 50%,#090612)',rays:false,badge:'🌑 Σπήλαιο'},
+  agora:  {col:'#9aad7a',glow:'rgba(154,173,122,.5)',bg:'assets/bg-agora.jpg',  grad:'linear-gradient(160deg,#0a1205,#162012 50%,#0a1205)',rays:false,badge:'🌿 Αγορά'}
 };
-const MOODS = {
-  neutral:     { col:'#c9a84c', glow:'rgba(201,168,76,.45)',  ov:'rgba(0,0,0,0)',      badge:'Μελετη' },
-  tense:       { col:'#c0392b', glow:'rgba(192,57,43,.4)',    ov:'rgba(80,10,10,.1)',  badge:'Αντιπαραθεση' },
-  enlightened: { col:'#e8c97a', glow:'rgba(232,201,122,.55)', ov:'rgba(40,30,0,.05)', badge:'Φωτισμος' },
-  dark:        { col:'#7a6aaa', glow:'rgba(122,106,170,.45)', ov:'rgba(10,5,30,.15)', badge:'Σκοταδι' }
+const MOODS={
+  neutral:    {col:'#c9a84c',glow:'rgba(201,168,76,.45)', ov:'rgba(0,0,0,0)',      badge:'● Μελέτη'},
+  tense:      {col:'#c0392b',glow:'rgba(192,57,43,.4)',   ov:'rgba(80,10,10,.1)',  badge:'⚡ Αντιπαράθεση'},
+  enlightened:{col:'#e8c97a',glow:'rgba(232,201,122,.55)',ov:'rgba(40,30,0,.05)', badge:'✦ Φωτισμός'},
+  dark:       {col:'#7a6aaa',glow:'rgba(122,106,170,.45)',ov:'rgba(10,5,30,.15)', badge:'◆ Σκοτάδι'}
 };
-const TLABELS = { argument:'Επιχειρημα', contradiction:'Αντιφαση', evidence:'Τεκμηριο', synthesis:'Συνθεση' };
+const TLABELS={argument:'Επιχείρημα',contradiction:'Αντίφαση',evidence:'Τεκμήριο',synthesis:'Σύνθεση'};
+
+/* ── FIGURE PALETTES per theme ── */
+const FIG_STYLES={
+  library:{
+    left: {skin:'#d4956a',robe:'#5a4020',hair:'#3a2810',beard:'#3a2810',arm:'#5a4020'},
+    right:{skin:'#c8805a',robe:'#3a5060',hair:'#1a1a2e',beard:'#1a1a2e',arm:'#3a5060'}
+  },
+  temple:{
+    left: {skin:'#e0b090',robe:'#8a7050',hair:'#4a3820',beard:'#4a3820',arm:'#8a7050'},
+    right:{skin:'#d4956a',robe:'#4a5080',hair:'#2a1810',beard:'#2a1810',arm:'#4a5080'}
+  },
+  cave:{
+    left: {skin:'#c8805a',robe:'#3a2050',hair:'#1a1020',beard:'#1a1020',arm:'#3a2050'},
+    right:{skin:'#d4956a',robe:'#502030',hair:'#2a1418',beard:'#2a1418',arm:'#502030'}
+  },
+  agora:{
+    left: {skin:'#d4956a',robe:'#506040',hair:'#3a2810',beard:'#3a2810',arm:'#506040'},
+    right:{skin:'#c0785a',robe:'#406050',hair:'#1a2010',beard:'#1a2010',arm:'#406050'}
+  }
+};
 
 /* ── LOAD ── */
-async function doLoad() {
-  const url = document.getElementById('inp-url').value.trim();
-  const id  = document.getElementById('inp-id').value.trim();
-  const target = url || (id ? (REPO ? REPO + id + '.json' : id + '.json') : '');
-  if (!target) { alert('Βαλε URL η Case ID'); return; }
+async function doLoad(){
+  const url=document.getElementById('inp-url').value.trim();
+  const id=document.getElementById('inp-id').value.trim();
+  const target=url||(id?(REPO?REPO+id+'.json':id+'.json'):'');
+  if(!target){alert('Βάλε URL ή Case ID');return;}
   showLoad(true);
-  try {
-    const r = await fetch(target);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-    boot(await r.json());
-  } catch(e) { showLoad(false); alert('Σφαλμα: ' + e.message); }
+  try{const r=await fetch(target);if(!r.ok)throw new Error('HTTP '+r.status);boot(await r.json());}
+  catch(e){showLoad(false);alert('Σφάλμα: '+e.message);}
 }
-function loadDemo() { boot(DEMO); }
+function loadDemo(){boot(DEMO);}
 
-function boot(data) {
-  S.d = data;
+function boot(data){
+  S.d=data;
   S.unlocked.add(data.investigation_board.clues[0].id);
-  document.getElementById('hcase').textContent = data.title;
-  if (KEY && KEY !== 'YOUR_GEMINI_KEY_HERE') document.getElementById('ailive').style.display = 'inline';
+  document.getElementById('hcase').textContent=data.title;
+  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE') document.getElementById('ailive').style.display='inline';
   document.getElementById('splash').classList.add('out');
-  setTimeout(() => {
-    document.getElementById('splash').style.display = 'none';
+  setTimeout(()=>{
+    document.getElementById('splash').style.display='none';
     document.getElementById('app').classList.add('on');
     showLoad(false);
     renderBoard(); initThree(); renderVerdict(); updProg();
-  }, 1100);
+  },1100);
 }
 
-/* ── BOARD ── */
-function renderBoard() {
-  const panel = document.getElementById('board-panel');
-  panel.querySelectorAll('.cc').forEach(e => e.remove());
-  const svg = document.getElementById('bsvg');
-  const clues = S.d.investigation_board.clues;
-  const W = panel.offsetWidth || window.innerWidth;
-  const H = panel.offsetHeight || window.innerHeight - 84;
-  const pos = layoutCards(clues.length, W, H);
-  const em = {};
-  clues.forEach((cl, i) => {
-    const ok = S.unlocked.has(cl.id);
-    const el = document.createElement('div');
-    el.className = 'cc' + (ok ? '' : ' lk');
-    el.id = 'cc-' + cl.id;
-    el.style.cssText = 'left:'+pos[i].x+'px;top:'+pos[i].y+'px;transform:rotate('+pos[i].r+'deg)';
-    const dots = [1,2,3].map(n => '<div class="dot'+(n<=cl.difficulty?' on':'')+'"></div>').join('');
-    el.innerHTML = '<div class="pin"></div><div class="ctype">'+(TLABELS[cl.type]||cl.type)+'</div><div class="ctitle">'+cl.title+'</div><div class="cbody">'+(ok?cl.content:'[Κλειδωμενο]')+'</div><div class="cfoot"><div class="csrc">'+cl.source+'</div><div class="cdots">'+dots+'</div></div>';
-    if (ok) makeDrag(el, () => openModal(cl));
+/* ═══════════════════════════════════
+   BOARD — draggable cards + SVG strings
+   FIX: SVG z-index above cards
+        strings redraw correctly during drag
+        click vs drag properly distinguished
+═══════════════════════════════════ */
+const EM={}; // element map for string drawing
+
+function renderBoard(){
+  const panel=document.getElementById('board-panel');
+  panel.querySelectorAll('.cc').forEach(e=>e.remove());
+  Object.keys(EM).forEach(k=>delete EM[k]);
+  const svg=document.getElementById('bsvg');
+  const clues=S.d.investigation_board.clues;
+  const W=panel.offsetWidth||window.innerWidth;
+  const H=panel.offsetHeight||(window.innerHeight-84);
+  const pos=layoutCards(clues.length,W,H);
+
+  clues.forEach((cl,i)=>{
+    const ok=S.unlocked.has(cl.id);
+    const el=document.createElement('div');
+    el.className='cc'+(ok?'':' lk');
+    el.id='cc-'+cl.id;
+    el.style.cssText='left:'+pos[i].x+'px;top:'+pos[i].y+'px;transform:rotate('+pos[i].r+'deg)';
+    const dots=[1,2,3].map(n=>'<div class="dot'+(n<=cl.difficulty?' on':'')+'"></div>').join('');
+    el.innerHTML='<div class="pin"></div><div class="ctype">'+(TLABELS[cl.type]||cl.type)+'</div><div class="ctitle">'+cl.title+'</div><div class="cbody">'+(ok?cl.content:'🔒 Κλειδωμένο')+'</div><div class="cfoot"><div class="csrc">'+cl.source+'</div><div class="cdots">'+dots+'</div></div>';
+    if(ok) makeDrag(el,()=>openModal(cl));
     panel.appendChild(el);
-    em[cl.id] = { el };
+    EM[cl.id]={el};
   });
-  setTimeout(() => drawStr(svg, S.d.investigation_board.connections, em), 80);
+
+  setTimeout(()=>drawStrings(),80);
 }
 
-function layoutCards(n, W, H) {
-  const CW=162, CH=138, M=46;
-  const cols = Math.ceil(Math.sqrt(n*1.7)), rows = Math.ceil(n/cols);
-  const cw = (W-M*2)/cols, ch = (H-M*2)/rows;
-  return Array.from({length:n}, (_,i) => ({
-    x: Math.max(M, Math.min(W-CW-M, M+(i%cols)*cw+(Math.random()*(cw-CW-10)))),
-    y: Math.max(M+12, Math.min(H-CH-M, M+Math.floor(i/cols)*ch+(Math.random()*(ch-CH-10)))),
-    r: (Math.random()-.5)*9
+function layoutCards(n,W,H){
+  const CW=168,CH=140,M=50;
+  const cols=Math.ceil(Math.sqrt(n*1.7)),rows=Math.ceil(n/cols);
+  const cw=(W-M*2)/cols,ch=(H-M*2)/rows;
+  return Array.from({length:n},(_,i)=>({
+    x:Math.max(M,Math.min(W-CW-M,M+(i%cols)*cw+(Math.random()*(Math.max(0,cw-CW-10))))),
+    y:Math.max(M+14,Math.min(H-CH-M,M+Math.floor(i/cols)*ch+(Math.random()*(Math.max(0,ch-CH-10))))),
+    r:(Math.random()-.5)*9
   }));
 }
 
-function makeDrag(el, cb) {
-  let ox, oy, moved = false;
-  el.addEventListener('mousedown', e => {
-    if (el.classList.contains('lk')) return;
+function makeDrag(el,onClick){
+  let ox,oy,moved=false;
+  el.addEventListener('mousedown',e=>{
+    if(el.classList.contains('lk'))return;
     moved=false; ox=e.clientX-el.offsetLeft; oy=e.clientY-el.offsetTop;
-    el.style.zIndex=20; el.style.transition='none';
-    const mm = ev => { moved=true; el.style.left=(ev.clientX-ox)+'px'; el.style.top=(ev.clientY-oy)+'px'; rdStr(); };
-    const mu = () => { el.style.zIndex=''; el.style.transition=''; document.removeEventListener('mousemove',mm); document.removeEventListener('mouseup',mu); if(!moved)cb(); };
-    document.addEventListener('mousemove',mm); document.addEventListener('mouseup',mu); e.preventDefault();
+    el.style.zIndex=20; el.style.transition='none'; el.style.transform='rotate(0deg)';
+    const mm=ev=>{
+      moved=true;
+      el.style.left=(ev.clientX-ox)+'px';
+      el.style.top=(ev.clientY-oy)+'px';
+      drawStrings(); // redraw strings live during drag
+    };
+    const mu=()=>{
+      el.style.zIndex=''; el.style.transition='';
+      document.removeEventListener('mousemove',mm);
+      document.removeEventListener('mouseup',mu);
+      if(!moved) onClick();
+    };
+    document.addEventListener('mousemove',mm);
+    document.addEventListener('mouseup',mu);
+    e.preventDefault();
+  });
+  // Touch support
+  el.addEventListener('touchstart',e=>{
+    if(el.classList.contains('lk'))return;
+    moved=false;
+    const t=e.touches[0];
+    ox=t.clientX-el.offsetLeft; oy=t.clientY-el.offsetTop;
+    el.style.zIndex=20; el.style.transition='none'; el.style.transform='rotate(0deg)';
+  },{passive:true});
+  el.addEventListener('touchmove',e=>{
+    moved=true;
+    const t=e.touches[0];
+    el.style.left=(t.clientX-ox)+'px';
+    el.style.top=(t.clientY-oy)+'px';
+    drawStrings();
+    e.preventDefault();
+  },{passive:false});
+  el.addEventListener('touchend',()=>{
+    el.style.zIndex=''; el.style.transition='';
+    if(!moved) onClick();
   });
 }
 
-function drawStr(svg, conns, em) {
+function drawStrings(){
+  const svg=document.getElementById('bsvg');
   svg.innerHTML='';
-  const br = svg.getBoundingClientRect();
-  const cc = { contrast:'#c0392b', agreement:'#4a9a4a', development:'#c9a84c' };
-  conns.forEach(c => {
-    const f=em[c.from], t=em[c.to]; if(!f||!t) return;
-    const fr=f.el.getBoundingClientRect(), tr=t.el.getBoundingClientRect();
+  const br=svg.getBoundingClientRect();
+  if(!S.d) return;
+  const cc={contrast:'#c0392b',agreement:'#4a9a4a',development:'#c9a84c'};
+  S.d.investigation_board.connections.forEach(c=>{
+    const f=EM[c.from],t=EM[c.to]; if(!f||!t) return;
+    const fr=f.el.getBoundingClientRect(),tr=t.el.getBoundingClientRect();
     const x1=fr.left-br.left+fr.width/2, y1=fr.top-br.top+fr.height/2;
     const x2=tr.left-br.left+tr.width/2, y2=tr.top-br.top+tr.height/2;
-    const cx=(x1+x2)/2+(Math.random()-.5)*55, cy=(y1+y2)/2+(Math.random()-.5)*55;
+    // Slight curve
+    const mx=(x1+x2)/2,my=(y1+y2)/2;
+    const dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy);
+    const curve=Math.min(60,len*.2);
+    const cx=mx+(-dy/len)*curve*(Math.random()>.5?1:-1);
+    const cy=my+(dx/len)*curve*(Math.random()>.5?1:-1);
     const col=cc[c.type]||'#c0392b';
+    // Shadow/outline for visibility
+    const shadow=document.createElementNS('http://www.w3.org/2000/svg','path');
+    shadow.setAttribute('d','M'+x1+','+y1+' Q'+cx+','+cy+' '+x2+','+y2);
+    shadow.setAttribute('stroke','rgba(0,0,0,.5)'); shadow.setAttribute('stroke-width','3.5'); shadow.setAttribute('fill','none');
+    svg.appendChild(shadow);
+    // Main string
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
     p.setAttribute('d','M'+x1+','+y1+' Q'+cx+','+cy+' '+x2+','+y2);
     p.setAttribute('stroke',col); p.setAttribute('stroke-width','1.8'); p.setAttribute('fill','none');
-    p.setAttribute('stroke-opacity','0.72');
-    if(c.type!=='contrast') p.setAttribute('stroke-dasharray','5,5');
+    p.setAttribute('stroke-opacity','0.85');
+    if(c.type!=='contrast') p.setAttribute('stroke-dasharray','6,4');
     const ti=document.createElementNS('http://www.w3.org/2000/svg','title'); ti.textContent=c.description||''; p.appendChild(ti);
     svg.appendChild(p);
+    // Dots at endpoints
+    [x1,y1,x2,y2].forEach((_,i,a)=>{if(i%2===0){const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('cx',a[i]);dot.setAttribute('cy',a[i+1]);dot.setAttribute('r','4');dot.setAttribute('fill',col);dot.setAttribute('opacity','0.6');svg.appendChild(dot);}});
   });
 }
-let _rd; function rdStr(){clearTimeout(_rd);_rd=setTimeout(()=>{const m={};S.d.investigation_board.clues.forEach(cl=>{const e=document.getElementById('cc-'+cl.id);if(e)m[cl.id]={el:e};});drawStr(document.getElementById('bsvg'),S.d.investigation_board.connections,m);},30);}
+
 window.addEventListener('resize',()=>{if(S.d)renderBoard();});
 
 /* ── MODAL ── */
-function openModal(cl) {
+function openModal(cl){
   S.curClue=cl;
   document.getElementById('mtype').textContent=TLABELS[cl.type]||cl.type;
   document.getElementById('mtitle').textContent=cl.title;
   document.getElementById('mbodytxt').textContent=cl.content;
-  document.getElementById('mfoot').textContent='Πηγη: '+cl.source+' | '+'★'.repeat(cl.difficulty)+'☆'.repeat(3-cl.difficulty);
+  document.getElementById('mfoot').textContent='📜 '+cl.source+' · '+'★'.repeat(cl.difficulty)+'☆'.repeat(3-cl.difficulty);
   document.getElementById('mstamp').textContent=cl.id.toUpperCase();
   document.getElementById('modal').classList.add('on');
-  const all=S.d.investigation_board.clues, idx=all.findIndex(c=>c.id===cl.id);
+  const all=S.d.investigation_board.clues,idx=all.findIndex(c=>c.id===cl.id);
   if(idx>=0&&idx+1<all.length) S.unlocked.add(all[idx+1].id);
   checkUnlocks(); updProg();
 }
@@ -638,7 +694,7 @@ function closeModal(){document.getElementById('modal').classList.remove('on');re
 function chatClue(){
   const cl=S.curClue; closeModal();
   const open=S.d.mind_palace.rooms.find(r=>S.rooms.has(r.id));
-  if(!open){alert('Ανοιξτε πρωτα ενα δωματιο!');return;}
+  if(!open){alert('Ανοίξτε πρώτα ένα δωμάτιο!');return;}
   if(!S.curRoom) startRoom(open.id);
   setTimeout(()=>{goTab('dial',document.getElementById('tdial'));document.getElementById('cin').value='Πες μου για: "'+cl.title+'"';send();},200);
 }
@@ -656,29 +712,27 @@ function initThree(){
   const canvas=document.getElementById('pal-canvas');
   const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
   renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-  renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-  renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=0.75;
+  renderer.shadowMap.enabled=true; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=0.75;
   const scene=new THREE.Scene();
   scene.background=new THREE.Color(0x04020a); scene.fog=new THREE.FogExp2(0x04020a,0.022);
   const camera=new THREE.PerspectiveCamera(55,1,0.1,200);
   camera.position.set(0,5,18); camera.lookAt(0,1,0);
-  scene.add(new THREE.AmbientLight(0x1a0a05,0.55));
+  scene.add(new THREE.AmbientLight(0x1a0a05,0.6));
   const ml=new THREE.DirectionalLight(0x3a2a5a,.4); ml.position.set(5,20,10); scene.add(ml);
   const sp=new THREE.SpotLight(0xc9a84c,3,40,Math.PI/5,.6,1.5); sp.position.set(0,18,8); sp.castShadow=true; scene.add(sp);
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(50,50),new THREE.MeshStandardMaterial({color:0x120800,roughness:.7,metalness:.2}));
   floor.rotation.x=-Math.PI/2; floor.position.y=-.5; floor.receiveShadow=true; scene.add(floor);
-  for(let x=-5;x<=5;x++)for(let z=-4;z<=4;z++){
+  for(let x=-5;x<=5;x++) for(let z=-4;z<=4;z++){
     const t=new THREE.Mesh(new THREE.BoxGeometry(1.95,.06,1.95),new THREE.MeshStandardMaterial({color:(x+z)%2===0?0x1e0e06:0x0e0602,roughness:.5,metalness:.3}));
     t.position.set(x*2,-.47,z*2); t.receiveShadow=true; scene.add(t);
   }
-  const rooms=S.d.mind_palace.rooms, sp2=14, sx=-(rooms.length-1)*sp2/2;
+  const rooms=S.d.mind_palace.rooms,sp2=14,sx=-(rooms.length-1)*sp2/2;
   rooms.forEach((r,i)=>buildRoom(scene,r,sx+i*sp2,0));
-  const pc=300, pg=new THREE.BufferGeometry(), pp=new Float32Array(pc*3);
+  const pc=300,pg=new THREE.BufferGeometry(),pp=new Float32Array(pc*3);
   for(let i=0;i<pc;i++){pp[i*3]=(Math.random()-.5)*42;pp[i*3+1]=Math.random()*14;pp[i*3+2]=(Math.random()-.5)*32;}
   pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
-  const pts=new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a84c,size:.055,transparent:true,opacity:.5}));
-  scene.add(pts);
-  const t1=new THREE.PointLight(0xff6600,2,12), t2=new THREE.PointLight(0xff6600,2,12);
+  scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a84c,size:.055,transparent:true,opacity:.5})));
+  const t1=new THREE.PointLight(0xff6600,2,12),t2=new THREE.PointLight(0xff6600,2,12);
   t1.position.set(-8,5,4); t2.position.set(8,5,4); scene.add(t1,t2);
   let drag=false,prev={x:0,y:0},theta=0,phi=.28; const R=18;
   canvas.addEventListener('mousedown',e=>{drag=true;prev={x:e.clientX,y:e.clientY};});
@@ -692,7 +746,7 @@ function initThree(){
   });
   function rsz(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   window.addEventListener('resize',rsz);
-  S.three={renderer,scene,camera,pts,pg,pc,t1,t2};
+  S.three={renderer,scene,camera,t1,t2,pg,pc};
   let tk=0;
   (function anim(){
     requestAnimationFrame(anim); tk+=.008;
@@ -705,51 +759,41 @@ function initThree(){
 }
 
 function buildRoom(scene,room,x,z){
-  const isTp=room.theme==='temple', isCv=room.theme==='cave';
+  const isTp=room.theme==='temple',isCv=room.theme==='cave';
   const sc=isTp?0x3a2810:isCv?0x1a1228:0x2a1808;
   const mat=new THREE.MeshStandardMaterial({color:sc,roughness:.85,metalness:.08});
   const gm=new THREE.MeshStandardMaterial({color:0xc9a84c,metalness:.85,roughness:.2,emissive:0x3a2800,emissiveIntensity:.6});
   const th=TH[room.theme]||TH.library;
   const nc=parseInt(th.col.replace('#',''),16);
   const nm=new THREE.MeshStandardMaterial({color:nc,emissive:new THREE.Color(nc).multiplyScalar(.3),roughness:.7});
-  const base=new THREE.Mesh(new THREE.BoxGeometry(9,.35,6.5),mat);
-  base.position.set(x,-.33,z); base.receiveShadow=true; scene.add(base);
+  const base=new THREE.Mesh(new THREE.BoxGeometry(9,.35,6.5),mat); base.position.set(x,-.33,z); base.receiveShadow=true; scene.add(base);
   const cp=isTp?[[-3.8,-2.5],[-1.3,-2.5],[1.3,-2.5],[3.8,-2.5],[-3.8,2.5],[-1.3,2.5],[1.3,2.5],[3.8,2.5]]:[[-3.2,-2.3],[3.2,-2.3],[-3.2,2.3],[3.2,2.3]];
   cp.forEach(([cx,cz])=>{
-    const col=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,4.5,10),mat);
-    col.position.set(x+cx,1.9,z+cz); col.castShadow=true; scene.add(col);
-    (()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.5,.22,.5),mat);m.position.set(x+cx,4.2,z+cz);scene.add(m);})();
-    (()=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.44,.18,.44),mat);m.position.set(x+cx,-.1,z+cz);scene.add(m);})();
+    const col=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,4.5,10),mat); col.position.set(x+cx,1.9,z+cz); col.castShadow=true; scene.add(col);
+    const cap=new THREE.Mesh(new THREE.BoxGeometry(.5,.22,.5),mat); cap.position.set(x+cx,4.2,z+cz); scene.add(cap);
+    const bas=new THREE.Mesh(new THREE.BoxGeometry(.44,.18,.44),mat); bas.position.set(x+cx,-.1,z+cz); scene.add(bas);
   });
   const rf=new THREE.Mesh(new THREE.BoxGeometry(9.5,.32,7),mat); rf.position.set(x,4.36,z); rf.castShadow=true; scene.add(rf);
   if(isTp){
     const sh=new THREE.Shape([new THREE.Vector2(-4.5,0),new THREE.Vector2(4.5,0),new THREE.Vector2(0,1.6)]);
-    const ped=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.22,bevelEnabled:false}),mat);
-    ped.position.set(x,4.68,z-3.2); ped.rotation.x=-Math.PI/2; scene.add(ped);
+    const ped=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.22,bevelEnabled:false}),mat); ped.position.set(x,4.68,z-3.2); ped.rotation.x=-Math.PI/2; scene.add(ped);
     const tr=new THREE.Mesh(new THREE.BoxGeometry(9.6,.06,7.1),gm); tr.position.set(x,4.53,z); scene.add(tr);
   } else if(!isCv){
     const wall=new THREE.Mesh(new THREE.BoxGeometry(8.5,5,.25),mat); wall.position.set(x,2.15,z-3); scene.add(wall);
-    for(let r=0;r<5;r++)for(let c=0;c<11;c++){
+    for(let r=0;r<5;r++) for(let c=0;c<11;c++){
       const bk=new THREE.Mesh(new THREE.BoxGeometry(.28+Math.random()*.18,.3+Math.random()*.14,.18),new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(Math.random(),.5,.18),roughness:.9}));
       bk.position.set(x-3.8+c*.7,-.08+r*.46,z-2.85); scene.add(bk);
     }
   } else {
-    for(let i=0;i<12;i++){
-      const rk=new THREE.Mesh(new THREE.SphereGeometry(.4+Math.random()*.6,6,5),mat);
-      rk.position.set(x+(Math.random()-.5)*8,(Math.random()-.5)*2,z+(Math.random()-.5)*5.5);
-      rk.scale.set(1,.6+Math.random()*.5,.7+Math.random()*.4); scene.add(rk);
-    }
+    for(let i=0;i<12;i++){const rk=new THREE.Mesh(new THREE.SphereGeometry(.4+Math.random()*.6,6,5),mat);rk.position.set(x+(Math.random()-.5)*8,(Math.random()-.5)*2,z+(Math.random()-.5)*5.5);rk.scale.set(1,.6+Math.random()*.5,.7+Math.random()*.4);scene.add(rk);}
   }
   const nh=new THREE.Mesh(new THREE.SphereGeometry(.3,12,10),nm); nh.position.set(x,1.85,z); nh.castShadow=true; scene.add(nh);
   const nb=new THREE.Mesh(new THREE.CylinderGeometry(.22,.36,1.7,8),nm); nb.position.set(x,.65,z); nb.castShadow=true; scene.add(nb);
   const nr=new THREE.Mesh(new THREE.ConeGeometry(.52,1.9,8),nm); nr.position.set(x,-.04,z); scene.add(nr);
-  if(isTp){
-    const hm=new THREE.MeshStandardMaterial({color:0xc9a84c,emissive:0xc9a84c,emissiveIntensity:.9,transparent:true,opacity:.25});
-    (()=>{const m=new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,28),hm);m.position.set(x,2.28,z);scene.add(m);})();
-  }
+  if(isTp){const hm=new THREE.MeshStandardMaterial({color:0xc9a84c,emissive:0xc9a84c,emissiveIntensity:.9,transparent:true,opacity:.25});const ha=new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,28),hm);ha.position.set(x,2.28,z);scene.add(ha);}
   const alt=new THREE.Mesh(new THREE.BoxGeometry(1.2,.72,.9),gm); alt.position.set(x+2,.07,z); scene.add(alt);
   const fm=new THREE.MeshStandardMaterial({color:0xff8800,emissive:0xff4400,emissiveIntensity:5,transparent:true,opacity:.9});
-  (()=>{const m=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),fm);m.position.set(x+2,.56,z);scene.add(m);})();
+  const fl2=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),fm); fl2.position.set(x+2,.56,z); scene.add(fl2);
   const fl=new THREE.PointLight(0xff6600,2,7); fl.position.set(x+2,1,z); scene.add(fl);
   const nl=new THREE.PointLight(nc,.6,8); nl.position.set(x,3,z); scene.add(nl);
 }
@@ -761,21 +805,48 @@ function updPalBtns(){
     const open=S.rooms.has(room.id);
     const btn=document.createElement('button');
     btn.className='rbtn '+(open?'open':'locked');
-    btn.textContent=(open?'H ':'L ')+room.name;
+    btn.textContent=(open?'🏛 ':'🔒 ')+room.name;
     if(open){btn.onclick=()=>{document.getElementById('hudname').textContent=room.name;document.getElementById('hudq').textContent=room.central_question;startRoom(room.id);goTab('dial',document.getElementById('tdial'));};}
-    else{const nd=room.unlock_requirements.filter(id=>!S.unlocked.has(id));btn.title='Χρειαζεστε: '+nd.join(', ');}
+    else{btn.title='Χρειάζεστε: '+room.unlock_requirements.filter(id=>!S.unlocked.has(id)).join(', ');}
     el.appendChild(btn);
   });
 }
 
-/* ── NPC / DIALOGUE ── */
-function setNPCColors(col, glow){
-  document.documentElement.style.setProperty('--npc', col);
-  document.documentElement.style.setProperty('--npcg', glow);
-  const h=document.getElementById('npchead'), r=document.getElementById('npcrobe'), g=document.getElementById('npcglow');
-  if(h){h.style.background='radial-gradient(circle at 35% 30%,rgba(255,225,185,.9),'+col+' 65%,rgba(0,0,0,.5))';h.style.boxShadow='0 0 24px '+glow+',0 0 50px '+glow;}
-  if(r){r.style.background='linear-gradient(180deg,'+col+' 0%,rgba(0,0,0,.6) 100%)';r.style.filter='drop-shadow(0 0 20px '+glow+')';}
-  if(g) g.style.background='radial-gradient(ellipse,'+glow+' 0%,transparent 70%)';
+/* ═══════════════════════════════════
+   NPC FIGURES — CSS portrait system
+   Two philosophers face each other
+   Colors change per theme + mood
+═══════════════════════════════════ */
+function paintFigure(side, style, npcColor, npcGlow, isTemple){
+  const s=side; // 'left' or 'right'
+  const head=document.getElementById('head-'+s);
+  const hair=document.getElementById('hair-'+s);
+  const beard=document.getElementById('beard-'+s);
+  const robe=document.getElementById('robe-'+s);
+  const arml=document.getElementById('arml-'+s);
+  const armr=document.getElementById('armr-'+s);
+  const glow=document.getElementById('glow-'+s);
+  const halo=document.getElementById('halo-'+s);
+  const label=document.getElementById('label-'+s);
+
+  if(head){
+    head.style.background='radial-gradient(circle at 38% 32%,#f0c8a0,'+style.skin+' 60%,rgba(0,0,0,.4))';
+    head.style.boxShadow='0 0 22px '+npcGlow+',0 0 44px '+npcGlow;
+  }
+  if(hair) hair.style.background=style.hair;
+  if(beard) beard.style.background=style.beard;
+  if(robe){robe.style.background='linear-gradient(160deg,'+npcColor+' 0%,'+style.robe+' 40%,rgba(0,0,0,.5) 100%)';robe.style.filter='drop-shadow(0 0 18px '+npcGlow+')';}
+  if(arml) arml.style.background=style.arm;
+  if(armr) armr.style.background=style.arm;
+  if(glow) glow.style.background='radial-gradient(ellipse,'+npcGlow+' 0%,transparent 70%)';
+  if(halo) halo.classList.toggle('on', isTemple);
+  if(label){label.style.color=npcColor;label.style.textShadow='0 0 14px '+npcGlow+',0 2px 4px rgba(0,0,0,.9)';}
+}
+
+function setSpeaker(side){
+  // highlight the speaking figure
+  document.getElementById('fig-left').classList.toggle('speaking', side==='left');
+  document.getElementById('fig-right').classList.toggle('speaking', side==='right');
 }
 
 function startRoom(roomId){
@@ -783,22 +854,39 @@ function startRoom(roomId){
   const dial=S.d.mind_palace.dialogues.find(d=>d.room_id===roomId);
   if(!room||!dial) return;
   S.curRoom=roomId; S.hist=[]; S.mood='neutral';
+
+  // ── Background ──
   const th=TH[room.theme]||TH.library;
   const bg=document.getElementById('scene-bg');
+  bg.style.background=th.grad; // set gradient immediately as fallback
+  bg.style.backgroundImage='none';
   const img=new Image();
-  img.onload=()=>{bg.style.backgroundImage="url('"+th.bg+"')";bg.style.background='';};
-  img.onerror=()=>{bg.style.backgroundImage='none';bg.style.background=th.grad;};
+  img.onload=()=>{bg.style.backgroundImage="url('"+th.bg+"')";bg.style.backgroundSize='cover';bg.style.backgroundPosition='center 20%';};
   img.src=th.bg;
-  document.getElementById('mood-layer').style.background=th.moodOverlay||'rgba(0,0,0,0)';
+
+  document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
   document.getElementById('rays').classList.toggle('on',th.rays);
   document.getElementById('mood-badge').textContent=th.badge;
-  setNPCColors(th.col, th.glow);
-  document.getElementById('npcname').textContent=dial.greeting;
-  document.getElementById('npchalo').classList.toggle('on',room.theme==='temple');
+
+  // ── Paint both figures ──
+  const figs=S.d.investigation_board.figures;
+  const pal=FIG_STYLES[room.theme]||FIG_STYLES.library;
+  const isTemple=room.theme==='temple';
+
+  paintFigure('left', pal.left, th.col, th.glow, isTemple);
+  paintFigure('right', pal.right, th.col, th.glow, isTemple);
+
+  // Set names from case figures
+  if(document.getElementById('label-left')) document.getElementById('label-left').textContent=figs[0]?figs[0].name:'—';
+  if(document.getElementById('label-right')) document.getElementById('label-right').textContent=figs[1]?figs[1].name:'—';
+
+  setSpeaker('left'); // NPC greets first
+
+  // ── Chat reset ──
   const area=document.getElementById('chat');
   area.innerHTML='<div class="typing" id="typing"><div class="tybubble"><div class="tydot"></div><div class="tydot"></div><div class="tydot"></div></div></div>';
-  document.getElementById('noroom')&&document.getElementById('noroom').remove();
-  addNPC(dial.greeting+' σας καλωσοριζει.\n\n'+room.central_question);
+  const nr=document.getElementById('noroom'); if(nr) nr.remove();
+  addNPC(dial.greeting+' σας καλωσορίζει.\n\n'+room.central_question, 'left');
   showSugs(dial.questions);
 }
 
@@ -806,100 +894,161 @@ function applyMood(mood){
   if(mood===S.mood) return;
   S.mood=mood;
   const mc=MOODS[mood]||MOODS.neutral;
-  setNPCColors(mc.col, mc.glow);
   document.getElementById('mood-layer').style.background=mc.ov;
   document.getElementById('rays').classList.toggle('on',mood==='enlightened');
   document.getElementById('mood-badge').textContent=mc.badge;
-  if(mood==='enlightened') document.getElementById('npchalo').classList.add('on');
+  // Update figure glow colors on mood change
+  ['left','right'].forEach(s=>{
+    const h=document.getElementById('head-'+s),g=document.getElementById('glow-'+s);
+    if(h) h.style.boxShadow='0 0 22px '+mc.glow+',0 0 44px '+mc.glow;
+    if(g) g.style.background='radial-gradient(ellipse,'+mc.glow+' 0%,transparent 70%)';
+    const lb=document.getElementById('label-'+s);
+    if(lb){lb.style.color=mc.col;lb.style.textShadow='0 0 14px '+mc.glow+',0 2px 4px rgba(0,0,0,.9)';}
+    if(mood==='enlightened'){const hl=document.getElementById('halo-'+s);if(hl)hl.classList.add('on');}
+  });
   if(!S.mem[S.curRoom]) S.mem[S.curRoom]={moods:[]};
   S.mem[S.curRoom].moods.push(mood);
 }
 
-function addNPC(txt){
-  const area=document.getElementById('chat'), ty=document.getElementById('typing');
+function addNPC(txt, side='left'){
+  const area=document.getElementById('chat'),ty=document.getElementById('typing');
   const dial=S.d.mind_palace.dialogues.find(d=>d.room_id===S.curRoom);
-  const nm=dial?dial.greeting:'Φιλοσοφος';
+  const nm=dial?dial.greeting:'Φιλόσοφος';
   const d=document.createElement('div'); d.className='msg npc';
   d.innerHTML='<div class="mwho">'+nm+'</div><div class="mbody">'+txt.replace(/\n/g,'<br>')+'</div>';
   area.insertBefore(d,ty); area.scrollTop=area.scrollHeight;
+  setSpeaker(side);
 }
 function addUsr(txt){
-  const area=document.getElementById('chat'), ty=document.getElementById('typing');
+  const area=document.getElementById('chat'),ty=document.getElementById('typing');
   const d=document.createElement('div'); d.className='msg usr';
-  d.innerHTML='<div class="mwho">Εσεις</div><div class="mbody">'+txt+'</div>';
+  d.innerHTML='<div class="mwho">Εσείς</div><div class="mbody">'+txt+'</div>';
   area.insertBefore(d,ty); area.scrollTop=area.scrollHeight;
+  setSpeaker('right'); // user = right figure reacts
 }
 function showSugs(qs){
   const el=document.getElementById('sugs'); el.innerHTML='';
-  qs.forEach(q=>{const b=document.createElement('button');b.className='sug';b.textContent=q;b.onclick=()=>{document.getElementById('cin').value=q;send();};el.appendChild(b);});
+  (qs||[]).forEach(q=>{const b=document.createElement('button');b.className='sug';b.textContent=q;b.onclick=()=>{document.getElementById('cin').value=q;send();};el.appendChild(b);});
 }
 
+/* ═══════════════════════════════════
+   GEMINI CALL
+   FIX: system_instruction moved inside
+        first user message for compatibility
+        with gemini-2.0-flash
+═══════════════════════════════════ */
 async function send(){
-  const cin=document.getElementById('cin'), txt=cin.value.trim();
+  const cin=document.getElementById('cin'),txt=cin.value.trim();
   if(!txt||!S.curRoom) return;
   cin.value=''; document.getElementById('csend').disabled=true;
   addUsr(txt); document.getElementById('sugs').innerHTML='';
   const ty=document.getElementById('typing'); ty.classList.add('on');
-  S.hist.push({role:'user',parts:[{text:txt}]});
+
   const room=S.d.mind_palace.rooms.find(r=>r.id===S.curRoom);
   const dial=S.d.mind_palace.dialogues.find(d=>d.room_id===S.curRoom);
-  const figs=S.d.investigation_board.figures, clues=S.d.investigation_board.clues;
+  const figs=S.d.investigation_board.figures,clues=S.d.investigation_board.clues;
+
+  S.hist.push({role:'user',parts:[{text:txt}]});
   let parsed=null;
-  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){try{parsed=await geminiCall(room,dial,figs,clues);}catch(e){console.warn(e);}}
-  else{await new Promise(r=>setTimeout(r,800));}
+  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){
+    try{parsed=await geminiCall(room,dial,figs,clues);}
+    catch(e){console.warn('Gemini error:',e.message);}
+  } else {
+    await new Promise(r=>setTimeout(r,900));
+  }
   ty.classList.remove('on');
-  const reply=parsed?.reply||dial.revelation||'Σκεφτειτε βαθυτερα τη σχεση μεταξυ '+figs.map(f=>f.name).join(' και ')+'.';
+
+  const reply=parsed?.reply||dial.revelation||'Σκεφτείτε βαθύτερα τη σχέση μεταξύ '+figs.map(f=>f.name).join(' και ')+'.';
   const mood=parsed?.mood||'neutral';
   const nc=parsed?.newClue||null;
+
   S.hist.push({role:'model',parts:[{text:reply}]});
-  addNPC(reply);
+  addNPC(reply,'left');
   applyMood(mood);
+
   if(nc&&nc.id&&!S.d.investigation_board.clues.find(c=>c.id===nc.id)){
     S.d.investigation_board.clues.push(nc);
     S.unlocked.add(nc.id);
     const lastId=clues[clues.length-1]?.id;
-    if(lastId) S.d.investigation_board.connections.push({from:lastId,to:nc.id,type:'development',description:'Αποκαλυφθηκε απο διαλογο'});
+    if(lastId) S.d.investigation_board.connections.push({from:lastId,to:nc.id,type:'development',description:'Αποκαλύφθηκε από διάλογο'});
     renderBoard();
-    setTimeout(()=>addNPC('Νεα ενδειξη: "'+nc.title+'"'),500);
+    setTimeout(()=>addNPC('✦ Νέα ένδειξη: «'+nc.title+'»','left'),500);
   }
   if(S.hist.length>=8&&!S.revelations.has(S.curRoom)){
     S.revelations.add(S.curRoom);
-    updProg(); updateVerdict();
-    applyMood('enlightened');
+    updProg(); updateVerdict(); applyMood('enlightened');
     document.querySelector('.chat-wrap').classList.add('rflash');
     setTimeout(()=>document.querySelector('.chat-wrap').classList.remove('rflash'),2000);
-    setTimeout(()=>addNPC('Αποκαλυψη: '+dial.revelation),900);
+    setTimeout(()=>addNPC('✦ Αποκάλυψη: '+dial.revelation,'left'),900);
   }
   document.getElementById('csend').disabled=false;
 }
 
 async function geminiCall(room,dial,figs,clues){
-  const sys='Εισαι ο '+dial.greeting+', φιλοσοφος σε ενα Mind Palace.\nΔωματιο: "'+room.name+'". Κεντρικο ερωτημα: '+room.central_question+'\nΦιλοσοφοι: '+figs.map(f=>f.name+' ('+f.work+', '+f.era+')').join(' & ')+'.\nΕνδειξεις: '+clues.map(c=>c.title+': '+c.content).join(' || ')+'\nExchanges: '+Math.floor(S.hist.length/2)+'.\n\nΚΑΝΟΝΕΣ:\n- Απαντας ΠΑΝΤΑ στα Ελληνικα, πρωτο προσωπο, ως αρχαιος σοφος.\n- Βαθυ, ποιητικο, 2-4 προτασεις.\n- Αν ο χρηστης αγγιξει κρισιμη ιδεα, αποκαλυψε νεα ενδειξη.\n\nΕπεστρεψε ΜΟΝΟ JSON χωρις markdown:\n{"reply":"...","mood":"neutral|tense|enlightened|dark","newClue":null}';
-  const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+KEY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system_instruction:{parts:[{text:sys}]},contents:S.hist.slice(-10),generationConfig:{maxOutputTokens:380,temperature:.95,responseMimeType:'application/json'}})});
+  /* FIX: system_instruction ως ξεχωριστό field που υποστηρίζει gemini-2.0-flash */
+  const sysText='Είσαι ο '+dial.greeting+', φιλόσοφος σε ένα Mind Palace.\n'+
+    'Δωμάτιο: "'+room.name+'". Ερώτημα: '+room.central_question+'\n'+
+    'Φιλόσοφοι: '+figs.map(f=>f.name+' ('+f.work+', '+f.era+')').join(' & ')+'.\n'+
+    'Ενδείξεις: '+clues.map(c=>c.title+': '+c.content.slice(0,80)).join(' | ')+'\n\n'+
+    'ΚΑΝΟΝΕΣ: Απαντάς ΠΑΝΤΑ Ελληνικά, 1ο πρόσωπο, ποιητικό ύφος, 2-4 προτάσεις.\n'+
+    'Επέστρεψε ΜΟΝΟ έγκυρο JSON (χωρίς markdown, χωρίς backticks):\n'+
+    '{"reply":"...","mood":"neutral|tense|enlightened|dark","newClue":null}';
+
+  // Build conversation — prepend system as first user turn if history empty
+  let contents=[...S.hist.slice(-12)];
+  if(contents.length===1){
+    // First message — inject system context before user turn
+    contents=[
+      {role:'user',parts:[{text:'[SYSTEM] '+sysText+'\n\n[USER] '+contents[0].parts[0].text}]}
+    ];
+  } else {
+    // Subsequent messages — add system reminder every 4 turns
+    if(S.hist.length%8===2){
+      contents=[
+        {role:'user',parts:[{text:'[Υπενθύμιση ρόλου: '+sysText.slice(0,200)+'...]\n\n'+contents[0].parts[0].text}]},
+        ...contents.slice(1)
+      ];
+    }
+  }
+
+  const r=await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key='+KEY,
+    {method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({
+       contents,
+       generationConfig:{maxOutputTokens:400,temperature:.92,responseMimeType:'application/json'}
+     })}
+  );
   const data=await r.json();
   if(data.error) throw new Error(data.error.message);
-  const raw=data.candidates[0].content.parts[0].text;
-  try{return JSON.parse(raw);}catch{return{reply:raw,mood:'neutral',newClue:null};}
+  if(!data.candidates?.[0]?.content?.parts?.[0]) throw new Error('Κενή απάντηση από Gemini');
+  const raw=data.candidates[0].content.parts[0].text.trim();
+  // Strip any accidental markdown fences
+  const clean=raw.replace(/^```json?\s*/,'').replace(/\s*```$/,'').trim();
+  try{return JSON.parse(clean);}
+  catch{return{reply:clean,mood:'neutral',newClue:null};}
 }
 
 /* ── VERDICT ── */
 function renderVerdict(){
   document.getElementById('vtitle').textContent=S.d.title;
   const figs=S.d.investigation_board.figures;
-  document.getElementById('vgrid').innerHTML=figs.map(f=>'<div class="vcard"><div class="vrole">Υποπτος</div><div class="vname">'+f.name+'</div><div class="vwork">'+f.work+' - '+f.era+'</div></div>').join('')+'<div class="vcard" style="grid-column:1/-1"><div class="vrole">Κεντρικη Εννοια</div><div class="vname">'+S.d.investigation_board.concepts.core+'</div></div>';
+  document.getElementById('vgrid').innerHTML=
+    figs.map(f=>'<div class="vcard"><div class="vrole">Φιλόσοφος</div><div class="vname">'+f.name+'</div><div class="vwork">📜 '+f.work+' · '+f.era+'</div></div>').join('')+
+    '<div class="vcard" style="grid-column:1/-1"><div class="vrole">Κεντρική Έννοια</div><div class="vname">'+S.d.investigation_board.concepts.core+'</div></div>';
   updateVerdict();
 }
 function updateVerdict(){
-  const rm=S.d.mind_palace.rooms, done=rm.filter(r=>S.revelations.has(r.id)).length;
+  const rm=S.d.mind_palace.rooms,done=rm.filter(r=>S.revelations.has(r.id)).length;
   const st=document.getElementById('vstamp');
   if(done===rm.length){st.textContent='CASE CLOSED';st.classList.add('done');document.getElementById('vsynp').textContent=S.d.mind_palace.dialogues.map(d=>d.revelation).join(' ');}
-  else st.textContent=done===0?'Υποθεση Εκκρεμει':done+'/'+rm.length+' Αποκαλυψεις';
+  else st.textContent=done===0?'Υπόθεση Εκκρεμεί':done+'/'+rm.length+' Αποκαλύψεις';
 }
 
 /* ── PROGRESS ── */
 function updProg(){
   if(!S.d) return;
-  const cl=S.d.investigation_board.clues, rm=S.d.mind_palace.rooms;
+  const cl=S.d.investigation_board.clues,rm=S.d.mind_palace.rooms;
   const pct=Math.round(S.unlocked.size/cl.length*35+S.rooms.size/rm.length*30+S.revelations.size/rm.length*35);
   document.getElementById('prog').style.width=pct+'%';
   document.getElementById('pct').textContent=pct+'%';
@@ -911,37 +1060,38 @@ function goTab(name,btn){
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
   document.getElementById(name+'-panel').classList.add('on'); btn.classList.add('on');
   if(name==='palace'&&S.three){setTimeout(()=>{const c=document.getElementById('pal-canvas');S.three.renderer.setSize(c.clientWidth,c.clientHeight,false);S.three.camera.aspect=c.clientWidth/c.clientHeight;S.three.camera.updateProjectionMatrix();},50);}
+  if(name==='board') drawStrings(); // redraw strings when switching to board
 }
 function showLoad(on){document.getElementById('loading').classList.toggle('on',on);}
 
 /* ── DEMO ── */
 const DEMO={
-  case_id:'demo',title:'Κοινη Γλωσσα, Ριζικα Διαφορετικο Νοημα',method:'comparative',status:'complete',
+  case_id:'demo',title:'Κοινή Γλώσσα, Ριζικά Διαφορετικό Νόημα',method:'comparative',status:'complete',
   investigation_board:{
-    figures:[{name:'Πλατων',work:'Φαιδρος',era:'4ος π.Χ.'},{name:'Ωριγενης',work:'Περι Αρχων',era:'3ος μ.Χ.'}],
-    concepts:{core:'Ψυχη και Αθανασια'},
+    figures:[{name:'Πλάτων',work:'Φαίδρος',era:'4ος π.Χ.'},{name:'Ωριγένης',work:'Περί Αρχών',era:'3ος μ.Χ.'}],
+    concepts:{core:'Ψυχή & Αθανασία'},
     clues:[
-      {id:'c1',title:'Η Θεωρια της Αναμνησης',content:'Ο Πλατων υποστηριζει οτι η μαθηση δεν ειναι παρα αναμνηση αιωνιων αληθειων. Η ψυχη γνωριζε την αληθεια πριν ενσαρκωθει.',source:'Πλατων',type:'argument',difficulty:1},
-      {id:'c2',title:'Η Προυπαρξη της Ψυχης',content:'Ο Ωριγενης δεχεται την προυπαρξη των ψυχων, αλλα ως ελευθερα λογικα οντα που απομακρυνθηκαν απο τον Θεο.',source:'Ωριγενης',type:'contradiction',difficulty:2},
-      {id:'c3',title:'Ο Κοσμος ως Παιδαγωγια',content:'Για τον Ωριγενη, η υλικη υπαρξη ειναι παιδαγωγικο μεσο εξαγνισμου — δεν ειναι δεσμωτηριο οπως για τον Πλατωνα.',source:'Ωριγενης',type:'evidence',difficulty:2},
-      {id:'c4',title:'Πηγη Γνωσης: Λογος vs Αποκαλυψη',content:'Η ελληνικη φιλοσοφια θεμελιωνει τη γνωση στον ανθρωπινο λογο. Το χριστιανικο δογμα απαιτει θεια αποκαλυψη.',source:'Συνθεση',type:'argument',difficulty:3},
-      {id:'c5',title:'Η Κοινη Κληρονομια',content:'Και οι δυο μοιραζονται την ελληνικη γλωσσα, αλλα γεμιζουν τις ιδιες λεξεις με ριζικα διαφορετικο νοημα.',source:'Συνθεση',type:'synthesis',difficulty:3}
+      {id:'c1',title:'Η Θεωρία της Ανάμνησης',content:'Ο Πλάτων υποστηρίζει ότι η μάθηση δεν είναι παρά ανάμνηση αιώνιων αληθειών. Η ψυχή γνώριζε την αλήθεια πριν ενσαρκωθεί.',source:'Πλάτων',type:'argument',difficulty:1},
+      {id:'c2',title:'Η Προΰπαρξη της Ψυχής',content:'Ο Ωριγένης δέχεται την προΰπαρξη των ψυχών, αλλά ως ελεύθερα λογικά όντα που απομακρύνθηκαν από τον Θεό.',source:'Ωριγένης',type:'contradiction',difficulty:2},
+      {id:'c3',title:'Ο Κόσμος ως Παιδαγωγία',content:'Για τον Ωριγένη, η υλική ύπαρξη είναι παιδαγωγικό μέσο εξαγνισμού — δεν είναι δεσμωτήριο όπως για τον Πλάτωνα.',source:'Ωριγένης',type:'evidence',difficulty:2},
+      {id:'c4',title:'Πηγή Γνώσης: Λόγος vs Αποκάλυψη',content:'Η ελληνική φιλοσοφία θεμελιώνει τη γνώση στον ανθρώπινο λόγο. Το χριστιανικό δόγμα απαιτεί θεία αποκάλυψη.',source:'Σύνθεση',type:'argument',difficulty:3},
+      {id:'c5',title:'Η Κοινή Κληρονομιά',content:'Και οι δύο μοιράζονται την ελληνική γλώσσα, αλλά γεμίζουν τις ίδιες λέξεις με ριζικά διαφορετικό νόημα.',source:'Σύνθεση',type:'synthesis',difficulty:3}
     ],
     connections:[
-      {from:'c1',to:'c2',type:'contrast',description:'Διαφορετικη αιτια προυπαρξης'},
-      {from:'c2',to:'c3',type:'development',description:'Απο προυπαρξη στον σκοπο κοσμου'},
-      {from:'c3',to:'c4',type:'contrast',description:'Λογος vs Αποκαλυψη'},
-      {from:'c4',to:'c5',type:'agreement',description:'Κοινη γλωσσικη κληρονομια'}
+      {from:'c1',to:'c2',type:'contrast',description:'Διαφορετική αιτία προΰπαρξης'},
+      {from:'c2',to:'c3',type:'development',description:'Από προΰπαρξη στον σκοπό κόσμου'},
+      {from:'c3',to:'c4',type:'contrast',description:'Λόγος vs Αποκάλυψη'},
+      {from:'c4',to:'c5',type:'agreement',description:'Κοινή γλωσσική κληρονομιά'}
     ]
   },
   mind_palace:{
     rooms:[
-      {id:'r1',name:'Βιβλιοθηκη Αναμνησης',theme:'library',unlock_requirements:['c1','c2'],central_question:'Πως γνωριζει η ψυχη αυτο που δεν εχει διδαχτει;'},
-      {id:'r2',name:'Ναος Αποκαλυψης',theme:'temple',unlock_requirements:['c3','c4','c5'],central_question:'Μπορει ο λογος να φτασει εκει που η αποκαλυψη ξεκινα;'}
+      {id:'r1',name:'Βιβλιοθήκη Ανάμνησης',theme:'library',unlock_requirements:['c1','c2'],central_question:'Πώς γνωρίζει η ψυχή αυτό που δεν έχει διδαχτεί;'},
+      {id:'r2',name:'Ναός Αποκάλυψης',theme:'temple',unlock_requirements:['c3','c4','c5'],central_question:'Μπορεί ο λόγος να φτάσει εκεί που η αποκάλυψη ξεκινά;'}
     ],
     dialogues:[
-      {room_id:'r1',greeting:'Σωκρατης',questions:['Τι εννοει ο Πλατων οτι η μαθηση ειναι αναμνηση;','Πως διαφερει η ψυχη του Πλατωνα απο αυτη του Ωριγενη;','Μπορει ο κοσμος να ειναι ταυτοχρονα δεσμωτηριο και σχολειο;'],revelation:'Η γνωση δεν εισερχεται απ εξω. Ειτε ως αναμνηση ειτε ως χαρη, αναδυεται εκ των εσω. Η διαφορα ειναι ποιος την τοποθετησε εκει.'},
-      {room_id:'r2',greeting:'Ωριγενης',questions:['Γιατι ο Θεος επετρεψε στις ψυχες να πεσουν;','Ποια η διαφορα της σωτηριας απο την απελευθερωση;','Μπορει ο λογος να συνυπαρξει με την πιστη;'],revelation:'Ελληνικη φιλοσοφια και χριστιανικο δογμα μοιραζονται γλωσσα αλλα οχι κατευθυνση. Ο ενας επιστρεφει στον εαυτο, ο αλλος κινειται προς τον Αλλο.'}
+      {room_id:'r1',greeting:'Σωκράτης',questions:['Τι εννοεί ο Πλάτων ότι η μάθηση είναι ανάμνηση;','Πώς διαφέρει η ψυχή του Πλάτωνα από αυτή του Ωριγένη;','Μπορεί ο κόσμος να είναι ταυτόχρονα δεσμωτήριο και σχολείο;'],revelation:'Η γνώση δεν εισέρχεται απ᾽ έξω. Είτε ως ανάμνηση είτε ως χάρη, αναδύεται εκ των έσω. Η διαφορά είναι ποιος την τοποθέτησε εκεί.'},
+      {room_id:'r2',greeting:'Ωριγένης',questions:['Γιατί ο Θεός επέτρεψε στις ψυχές να πέσουν;','Ποια η διαφορά της σωτηρίας από την απελευθέρωση;','Μπορεί ο λόγος να συνυπάρξει με την πίστη;'],revelation:'Ελληνική φιλοσοφία και χριστιανικό δόγμα μοιράζονται γλώσσα αλλά όχι κατεύθυνση. Ο ένας επιστρέφει στον εαυτό, ο άλλος κινείται προς τον Άλλο.'}
     ]
   }
 };
