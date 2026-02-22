@@ -145,8 +145,8 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 #dial-panel{display:none;flex-direction:column;position:relative;overflow:hidden;background:#060300}
 #dial-panel.on{display:flex}
 
-#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.62) saturate(.88);transition:background 1s ease}
-#scene-grad{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 18%,transparent 62%,rgba(0,0,0,.97) 100%),linear-gradient(90deg,rgba(0,0,0,.25) 0%,transparent 18%,transparent 82%,rgba(0,0,0,.25) 100%)}
+#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.78) saturate(.88);transition:background 1s ease}
+#scene-grad{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 15%,transparent 68%,rgba(0,0,0,.95) 100%),linear-gradient(90deg,rgba(0,0,0,.15) 0%,transparent 12%,transparent 88%,rgba(0,0,0,.15) 100%)}
 #mood-layer{position:absolute;inset:0;z-index:2;pointer-events:none;transition:background .8s ease}
 .rays{position:absolute;top:0;left:50%;transform:translateX(-50%);width:70%;height:55%;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.2s ease;background:radial-gradient(ellipse 35% 100% at 35% 0%,rgba(255,215,100,.08),transparent 70%),radial-gradient(ellipse 35% 100% at 65% 0%,rgba(255,200,80,.06),transparent 70%)}
 .rays.on{opacity:1}
@@ -165,7 +165,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 }
 #npc-img{
   width:100%;height:100%;object-fit:cover;object-position:center 15%;
-  filter:brightness(.55) saturate(.85);
+  filter:brightness(.78) saturate(.85);
   transition:filter 1s ease;
 }
 /* Gradient fade at bottom into chat */
@@ -353,7 +353,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
       <!-- NPC Scene: static image as background, dynamic overlays on top -->
       <div class="npc-scene" id="npc-scene">
         <div id="npc-img-wrap">
-          <img id="npc-img" src="assets/bg_debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg'"/>
+          <img id="npc-img" src="assets/bg_debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
         </div>
         <!-- Dynamic light overlay (mood) -->
         <div id="npc-light"></div>
@@ -813,8 +813,12 @@ function startRoom(roomId){
   img.onerror=()=>console.warn('❌ BG 404:',th.bg,' — using gradient fallback');
   img.src=th.bg;
   // NPC scene image — always the debate scene
+  // Reload NPC scene image
   const npcImg=document.getElementById('npc-img');
-  if(npcImg) npcImg.src='assets/bg_debate.jpg';
+  if(npcImg){
+    npcImg.onerror=()=>{npcImg.src='assets/bg-library.jpg';npcImg.onerror=null;};
+    npcImg.src='assets/bg_debate.jpg';
+  }
 
   document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
   document.getElementById('rays').classList.toggle('on',th.rays);
@@ -890,10 +894,17 @@ async function send(){
   S.hist.push({role:'user',parts:[{text:txt}]});
   let parsed=null;
   if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){
-    try{parsed=await geminiCall(room,dial,figs,clues);}
-    catch(e){console.warn('Gemini error:',e.message);}
+    try{
+      parsed=await geminiCall(room,dial,figs,clues);
+    } catch(e){
+      console.error('Gemini error:',e.message);
+      // Show error in chat briefly
+      const errMsg='[API Error: '+e.message.slice(0,60)+']';
+      addNPC(errMsg,'left');
+    }
   } else {
-    await new Promise(r=>setTimeout(r,900));
+    console.warn('No key — using fallback');
+    await new Promise(r=>setTimeout(r,600));
   }
   ty.classList.remove('on');
 
