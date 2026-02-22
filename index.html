@@ -145,8 +145,8 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 #dial-panel{display:none;flex-direction:column;position:relative;overflow:hidden;background:#060300}
 #dial-panel.on{display:flex}
 
-#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.32) saturate(.75);transition:background 1s ease}
-#scene-grad{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.5) 0%,transparent 25%,transparent 55%,rgba(0,0,0,.92) 100%),linear-gradient(90deg,rgba(0,0,0,.45) 0%,transparent 12%,transparent 88%,rgba(0,0,0,.45) 100%)}
+#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.62) saturate(.88);transition:background 1s ease}
+#scene-grad{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 18%,transparent 62%,rgba(0,0,0,.97) 100%),linear-gradient(90deg,rgba(0,0,0,.25) 0%,transparent 18%,transparent 82%,rgba(0,0,0,.25) 100%)}
 #mood-layer{position:absolute;inset:0;z-index:2;pointer-events:none;transition:background .8s ease}
 .rays{position:absolute;top:0;left:50%;transform:translateX(-50%);width:70%;height:55%;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.2s ease;background:radial-gradient(ellipse 35% 100% at 35% 0%,rgba(255,215,100,.08),transparent 70%),radial-gradient(ellipse 35% 100% at 65% 0%,rgba(255,200,80,.06),transparent 70%)}
 .rays.on{opacity:1}
@@ -170,7 +170,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 }
 /* Gradient fade at bottom into chat */
 .npc-scene::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:45%;
+  content:'';position:absolute;bottom:0;left:0;right:0;height:32%;
   background:linear-gradient(0deg,rgba(6,3,0,1) 0%,transparent 100%);
   z-index:10;pointer-events:none;
 }
@@ -353,7 +353,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
       <!-- NPC Scene: static image as background, dynamic overlays on top -->
       <div class="npc-scene" id="npc-scene">
         <div id="npc-img-wrap">
-          <img id="npc-img" src="assets/npc-scene.jpg" alt="" onerror="this.src='assets/bg-library.jpg'"/>
+          <img id="npc-img" src="assets/bg_debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg'"/>
         </div>
         <!-- Dynamic light overlay (mood) -->
         <div id="npc-light"></div>
@@ -812,6 +812,9 @@ function startRoom(roomId){
   };
   img.onerror=()=>console.warn('❌ BG 404:',th.bg,' — using gradient fallback');
   img.src=th.bg;
+  // NPC scene image — always the debate scene
+  const npcImg=document.getElementById('npc-img');
+  if(npcImg) npcImg.src='assets/bg_debate.jpg';
 
   document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
   document.getElementById('rays').classList.toggle('on',th.rays);
