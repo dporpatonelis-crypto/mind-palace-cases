@@ -7,10 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /* CONFIG — αλλάξτε μόνο εδώ */
 window.MP_CONFIG = {
-  GEMINI_KEY : 'YOUR_GEMINI_KEY_HERE',
+  GEMINI_KEY : 'AIzaSyBhE0RHA5GrZNG8VPo05HKTb_9Fzc-Cj0I',
   REPO_BASE  : 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/cases/'
 };
 </script>
@@ -125,54 +126,18 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 
 #board-hint{position:absolute;top:.7rem;left:50%;transform:translateX(-50%);z-index:20;font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.15em;color:rgba(201,168,76,.4);background:rgba(0,0,0,.6);padding:.2rem .6rem;pointer-events:none;transition:opacity .5s}
 
-/* ── PALACE — 2D elegant room selector ── */
-#palace-panel{position:relative;overflow:hidden;background:#08040a;display:flex;align-items:center;justify-content:center}
-#palace-bg{
-  position:absolute;inset:0;z-index:0;
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 30%,rgba(201,168,76,.06),transparent 70%),
-    radial-gradient(ellipse 80% 60% at 20% 80%,rgba(80,40,10,.2),transparent 60%),
-    radial-gradient(ellipse 70% 50% at 80% 70%,rgba(40,20,60,.2),transparent 60%),
-    linear-gradient(160deg,#06030a,#100810 40%,#0a0604);
-}
-/* Floating particles via CSS */
-#palace-bg::before{
-  content:'';position:absolute;inset:0;
-  background-image:
-    radial-gradient(1px 1px at 15% 25%,rgba(201,168,76,.4),transparent),
-    radial-gradient(1px 1px at 35% 60%,rgba(201,168,76,.3),transparent),
-    radial-gradient(1px 1px at 55% 20%,rgba(201,168,76,.25),transparent),
-    radial-gradient(1px 1px at 70% 75%,rgba(201,168,76,.35),transparent),
-    radial-gradient(1px 1px at 85% 40%,rgba(201,168,76,.2),transparent),
-    radial-gradient(1px 1px at 25% 85%,rgba(201,168,76,.3),transparent),
-    radial-gradient(1px 1px at 90% 15%,rgba(201,168,76,.2),transparent),
-    radial-gradient(1px 1px at 45% 90%,rgba(201,168,76,.25),transparent);
-  background-size:100% 100%;
-  animation:drift 20s ease-in-out infinite alternate;
-}
-@keyframes drift{0%{transform:translateY(0)}100%{transform:translateY(-12px)}}
-#palace-content{position:relative;z-index:5;text-align:center;width:100%;max-width:700px;padding:2rem}
-#palace-title{margin-bottom:3rem}
-.pal-icon{font-size:2.8rem;margin-bottom:1rem;filter:drop-shadow(0 0 20px rgba(201,168,76,.5));animation:orb 4s ease-in-out infinite}
-.hudname{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,3vw,1.6rem);color:var(--gold);letter-spacing:.15em;text-shadow:0 0 30px rgba(201,168,76,.4);margin-bottom:.6rem}
-.hudq{font-family:'Cinzel',serif;font-size:.65rem;color:rgba(201,168,76,.45);letter-spacing:.15em;line-height:1.7;max-width:480px;margin:0 auto}
-#pal-rooms{display:flex;gap:1.4rem;justify-content:center;flex-wrap:wrap}
-.rbtn{
-  font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
-  padding:1.4rem 2rem;border:1px solid rgba(201,168,76,.2);
-  background:rgba(10,5,2,.7);color:rgba(201,168,76,.45);
-  cursor:pointer;transition:all .4s;backdrop-filter:blur(8px);
-  position:relative;overflow:hidden;min-width:200px;text-align:left;
-}
-.rbtn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,.04),transparent);pointer-events:none}
-.rbtn .rbtn-icon{font-size:2rem;margin-bottom:.7rem;display:block;filter:drop-shadow(0 0 8px rgba(201,168,76,.3))}
-.rbtn .rbtn-name{display:block;margin-bottom:.3rem;font-size:.62rem}
-.rbtn .rbtn-q{display:block;font-family:'Crimson Text',serif;font-size:.72rem;color:rgba(242,228,196,.35);letter-spacing:.03em;line-height:1.4;text-transform:none;font-style:italic}
-.rbtn.open{border-color:rgba(201,168,76,.45);color:var(--gold)}
-.rbtn.open .rbtn-q{color:rgba(242,228,196,.55)}
-.rbtn.open:hover{background:rgba(201,168,76,.08);border-color:var(--gold);box-shadow:0 0 30px rgba(201,168,76,.15),inset 0 0 20px rgba(201,168,76,.03);transform:translateY(-2px)}
-.rbtn.locked{opacity:.3;cursor:not-allowed;filter:grayscale(.8)}
-.rbtn-lock{position:absolute;top:.8rem;right:.8rem;font-size:.9rem;opacity:.4}
+/* ── PALACE ── */
+#palace-panel{position:relative;overflow:hidden;background:#000}
+#pal-canvas{width:100%;height:100%;display:block;cursor:grab}
+#pal-canvas:active{cursor:grabbing}
+#pal-hud{position:absolute;top:1rem;left:1rem;z-index:10;pointer-events:none}
+.hudname{font-family:'Cinzel Decorative',serif;font-size:.9rem;color:var(--gold);text-shadow:0 0 22px rgba(201,168,76,.6);margin-bottom:.2rem}
+.hudq{font-family:'Cinzel',serif;font-size:.58rem;color:rgba(201,168,76,.5);letter-spacing:.09em;max-width:260px;line-height:1.45}
+#pal-rooms{position:absolute;bottom:1.2rem;left:50%;transform:translateX(-50%);display:flex;gap:.6rem;z-index:10;flex-wrap:wrap;justify-content:center}
+.rbtn{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;padding:.48rem .9rem;border:1px solid var(--gold-dim);background:rgba(5,2,0,.85);color:var(--gold-dim);cursor:pointer;transition:all .3s;backdrop-filter:blur(4px)}
+.rbtn.open{border-color:var(--gold);color:var(--gold)}
+.rbtn.open:hover{background:var(--gold);color:var(--ink);box-shadow:0 0 20px rgba(201,168,76,.4)}
+.rbtn.locked{opacity:.32;cursor:not-allowed}
 
 /* ═══════════════════════════════════
    DIALOGUE — cinematic NPC scene
@@ -369,15 +334,12 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 
     <!-- PALACE -->
     <div class="panel" id="palace-panel">
-      <div id="palace-bg"></div>
-      <div id="palace-content">
-        <div id="palace-title">
-          <div class="pal-icon">🏛</div>
-          <div class="pal-heading" id="hudname">Mind Palace</div>
-          <div class="pal-sub" id="hudq">Επιλέξτε δωμάτιο για να εισέλθετε στον διάλογο</div>
-        </div>
-        <div id="pal-rooms"></div>
+      <div id="pal-hud">
+        <div class="hudname" id="hudname">Εξερευνήστε το Palace</div>
+        <div class="hudq" id="hudq">Σύρετε για περιστροφή · Επιλέξτε δωμάτιο παρακάτω</div>
       </div>
+      <canvas id="pal-canvas"></canvas>
+      <div id="pal-rooms"></div>
     </div>
 
     <!-- DIALOGUE -->
@@ -391,7 +353,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
       <!-- NPC Scene: static image as background, dynamic overlays on top -->
       <div class="npc-scene" id="npc-scene">
         <div id="npc-img-wrap">
-          <img id="npc-img" src="assets/bg-debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
+          <img id="npc-img" src="assets/bg_debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
         </div>
         <!-- Dynamic light overlay (mood) -->
         <div id="npc-light"></div>
@@ -495,7 +457,7 @@ function boot(data){
     document.getElementById('splash').style.display='none';
     document.getElementById('app').classList.add('on');
     showLoad(false);
-    renderBoard(); updPalBtns(); renderVerdict(); updProg();
+    renderBoard(); initThree(); renderVerdict(); updProg();
   },1100);
 }
 
@@ -602,8 +564,6 @@ function drawStrings(){
   const cc={contrast:'#c0392b',agreement:'#4a9a4a',development:'#c9a84c'};
   S.d.investigation_board.connections.forEach(c=>{
     const f=EM[c.from],t=EM[c.to]; if(!f||!t) return;
-    // Only draw if BOTH clues are unlocked
-    if(!S.unlocked.has(c.from)||!S.unlocked.has(c.to)) return;
     const fe=f.el,te=t.el;
     const x1=fe.offsetLeft+fe.offsetWidth/2;
     const y1=fe.offsetTop+fe.offsetHeight/2;
@@ -696,34 +656,106 @@ function checkUnlocks(){
 }
 
 /* ── THREE.JS ── */
+function initThree(){
+  const canvas=document.getElementById('pal-canvas');
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.shadowMap.enabled=true; renderer.toneMapping=THREE.ACESFilmicToneMapping; renderer.toneMappingExposure=0.75;
+  const scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x04020a); scene.fog=new THREE.FogExp2(0x04020a,0.022);
+  const camera=new THREE.PerspectiveCamera(55,1,0.1,200);
+  camera.position.set(0,5,18); camera.lookAt(0,1,0);
+  scene.add(new THREE.AmbientLight(0x1a0a05,0.6));
+  const ml=new THREE.DirectionalLight(0x3a2a5a,.4); ml.position.set(5,20,10); scene.add(ml);
+  const sp=new THREE.SpotLight(0xc9a84c,3,40,Math.PI/5,.6,1.5); sp.position.set(0,18,8); sp.castShadow=true; scene.add(sp);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(50,50),new THREE.MeshStandardMaterial({color:0x120800,roughness:.7,metalness:.2}));
+  floor.rotation.x=-Math.PI/2; floor.position.y=-.5; floor.receiveShadow=true; scene.add(floor);
+  for(let x=-5;x<=5;x++) for(let z=-4;z<=4;z++){
+    const t=new THREE.Mesh(new THREE.BoxGeometry(1.95,.06,1.95),new THREE.MeshStandardMaterial({color:(x+z)%2===0?0x1e0e06:0x0e0602,roughness:.5,metalness:.3}));
+    t.position.set(x*2,-.47,z*2); t.receiveShadow=true; scene.add(t);
+  }
+  const rooms=S.d.mind_palace.rooms,sp2=14,sx=-(rooms.length-1)*sp2/2;
+  rooms.forEach((r,i)=>buildRoom(scene,r,sx+i*sp2,0));
+  const pc=300,pg=new THREE.BufferGeometry(),pp=new Float32Array(pc*3);
+  for(let i=0;i<pc;i++){pp[i*3]=(Math.random()-.5)*42;pp[i*3+1]=Math.random()*14;pp[i*3+2]=(Math.random()-.5)*32;}
+  pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+  scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a84c,size:.055,transparent:true,opacity:.5})));
+  const t1=new THREE.PointLight(0xff6600,2,12),t2=new THREE.PointLight(0xff6600,2,12);
+  t1.position.set(-8,5,4); t2.position.set(8,5,4); scene.add(t1,t2);
+  let drag=false,prev={x:0,y:0},theta=0,phi=.28; const R=18;
+  canvas.addEventListener('mousedown',e=>{drag=true;prev={x:e.clientX,y:e.clientY};});
+  window.addEventListener('mouseup',()=>drag=false);
+  window.addEventListener('mousemove',e=>{
+    if(!drag)return;
+    theta-=(e.clientX-prev.x)*.004; phi=Math.max(.08,Math.min(1.1,phi-(e.clientY-prev.y)*.004));
+    prev={x:e.clientX,y:e.clientY};
+    camera.position.set(R*Math.sin(theta)*Math.cos(phi),R*Math.sin(phi)+2,R*Math.cos(theta)*Math.cos(phi));
+    camera.lookAt(0,1,0);
+  });
+  function rsz(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+  window.addEventListener('resize',rsz);
+  S.three={renderer,scene,camera,t1,t2,pg,pc};
+  let tk=0;
+  (function anim(){
+    requestAnimationFrame(anim); tk+=.008;
+    t1.intensity=1.7+Math.sin(tk*7.3)*.4; t2.intensity=1.7+Math.sin(tk*5.1+1)*.4;
+    const pa=pg.attributes.position;
+    for(let i=0;i<pc;i++){pa.array[i*3+1]+=.005;if(pa.array[i*3+1]>14)pa.array[i*3+1]=0;}
+    pa.needsUpdate=true; renderer.render(scene,camera);
+  })();
+  rsz(); updPalBtns();
+}
 
-/* Three.js removed — using 2D palace */
-
+function buildRoom(scene,room,x,z){
+  const isTp=room.theme==='temple',isCv=room.theme==='cave';
+  const sc=isTp?0x3a2810:isCv?0x1a1228:0x2a1808;
+  const mat=new THREE.MeshStandardMaterial({color:sc,roughness:.85,metalness:.08});
+  const gm=new THREE.MeshStandardMaterial({color:0xc9a84c,metalness:.85,roughness:.2,emissive:0x3a2800,emissiveIntensity:.6});
+  const th=TH[room.theme]||TH.library;
+  const nc=parseInt(th.col.replace('#',''),16);
+  const nm=new THREE.MeshStandardMaterial({color:nc,emissive:new THREE.Color(nc).multiplyScalar(.3),roughness:.7});
+  const base=new THREE.Mesh(new THREE.BoxGeometry(9,.35,6.5),mat); base.position.set(x,-.33,z); base.receiveShadow=true; scene.add(base);
+  const cp=isTp?[[-3.8,-2.5],[-1.3,-2.5],[1.3,-2.5],[3.8,-2.5],[-3.8,2.5],[-1.3,2.5],[1.3,2.5],[3.8,2.5]]:[[-3.2,-2.3],[3.2,-2.3],[-3.2,2.3],[3.2,2.3]];
+  cp.forEach(([cx,cz])=>{
+    const col=new THREE.Mesh(new THREE.CylinderGeometry(.16,.2,4.5,10),mat); col.position.set(x+cx,1.9,z+cz); col.castShadow=true; scene.add(col);
+    const cap=new THREE.Mesh(new THREE.BoxGeometry(.5,.22,.5),mat); cap.position.set(x+cx,4.2,z+cz); scene.add(cap);
+    const bas=new THREE.Mesh(new THREE.BoxGeometry(.44,.18,.44),mat); bas.position.set(x+cx,-.1,z+cz); scene.add(bas);
+  });
+  const rf=new THREE.Mesh(new THREE.BoxGeometry(9.5,.32,7),mat); rf.position.set(x,4.36,z); rf.castShadow=true; scene.add(rf);
+  if(isTp){
+    const sh=new THREE.Shape([new THREE.Vector2(-4.5,0),new THREE.Vector2(4.5,0),new THREE.Vector2(0,1.6)]);
+    const ped=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.22,bevelEnabled:false}),mat); ped.position.set(x,4.68,z-3.2); ped.rotation.x=-Math.PI/2; scene.add(ped);
+    const tr=new THREE.Mesh(new THREE.BoxGeometry(9.6,.06,7.1),gm); tr.position.set(x,4.53,z); scene.add(tr);
+  } else if(!isCv){
+    const wall=new THREE.Mesh(new THREE.BoxGeometry(8.5,5,.25),mat); wall.position.set(x,2.15,z-3); scene.add(wall);
+    for(let r=0;r<5;r++) for(let c=0;c<11;c++){
+      const bk=new THREE.Mesh(new THREE.BoxGeometry(.28+Math.random()*.18,.3+Math.random()*.14,.18),new THREE.MeshStandardMaterial({color:new THREE.Color().setHSL(Math.random(),.5,.18),roughness:.9}));
+      bk.position.set(x-3.8+c*.7,-.08+r*.46,z-2.85); scene.add(bk);
+    }
+  } else {
+    for(let i=0;i<12;i++){const rk=new THREE.Mesh(new THREE.SphereGeometry(.4+Math.random()*.6,6,5),mat);rk.position.set(x+(Math.random()-.5)*8,(Math.random()-.5)*2,z+(Math.random()-.5)*5.5);rk.scale.set(1,.6+Math.random()*.5,.7+Math.random()*.4);scene.add(rk);}
+  }
+  const nh=new THREE.Mesh(new THREE.SphereGeometry(.3,12,10),nm); nh.position.set(x,1.85,z); nh.castShadow=true; scene.add(nh);
+  const nb=new THREE.Mesh(new THREE.CylinderGeometry(.22,.36,1.7,8),nm); nb.position.set(x,.65,z); nb.castShadow=true; scene.add(nb);
+  const nr=new THREE.Mesh(new THREE.ConeGeometry(.52,1.9,8),nm); nr.position.set(x,-.04,z); scene.add(nr);
+  if(isTp){const hm=new THREE.MeshStandardMaterial({color:0xc9a84c,emissive:0xc9a84c,emissiveIntensity:.9,transparent:true,opacity:.25});const ha=new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,28),hm);ha.position.set(x,2.28,z);scene.add(ha);}
+  const alt=new THREE.Mesh(new THREE.BoxGeometry(1.2,.72,.9),gm); alt.position.set(x+2,.07,z); scene.add(alt);
+  const fm=new THREE.MeshStandardMaterial({color:0xff8800,emissive:0xff4400,emissiveIntensity:5,transparent:true,opacity:.9});
+  const fl2=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),fm); fl2.position.set(x+2,.56,z); scene.add(fl2);
+  const fl=new THREE.PointLight(0xff6600,2,7); fl.position.set(x+2,1,z); scene.add(fl);
+  const nl=new THREE.PointLight(nc,.6,8); nl.position.set(x,3,z); scene.add(nl);
+}
 
 function updPalBtns(){
   const el=document.getElementById('pal-rooms'); if(!el||!S.d) return;
   el.innerHTML='';
-  const THEME_ICONS={library:'📚',temple:'🏛',cave:'🌑',agora:'🌿'};
   S.d.mind_palace.rooms.forEach(room=>{
     const open=S.rooms.has(room.id);
-    const done=S.revelations.has(room.id);
     const btn=document.createElement('button');
     btn.className='rbtn '+(open?'open':'locked');
-    const icon=THEME_ICONS[room.theme]||'🏛';
-    const missing=room.unlock_requirements.filter(id=>!S.unlocked.has(id));
-    btn.innerHTML=
-      '<span class="rbtn-lock">'+(done?'✦':open?'':'🔒')+'</span>'+
-      '<span class="rbtn-icon">'+icon+'</span>'+
-      '<span class="rbtn-name">'+room.name+'</span>'+
-      '<span class="rbtn-q">'+(open?room.central_question:'Απαιτείται: '+missing.join(', '))+'</span>';
-    if(open){
-      btn.onclick=()=>{
-        document.getElementById('hudname').textContent=room.name;
-        document.getElementById('hudq').textContent=room.central_question;
-        startRoom(room.id);
-        goTab('dial',document.getElementById('tdial'));
-      };
-    }
+    btn.textContent=(open?'🏛 ':'🔒 ')+room.name;
+    if(open){btn.onclick=()=>{document.getElementById('hudname').textContent=room.name;document.getElementById('hudq').textContent=room.central_question;startRoom(room.id);goTab('dial',document.getElementById('tdial'));};}
+    else{btn.title='Χρειάζεστε: '+room.unlock_requirements.filter(id=>!S.unlocked.has(id)).join(', ');}
     el.appendChild(btn);
   });
 }
@@ -785,7 +817,7 @@ function startRoom(roomId){
   const npcImg=document.getElementById('npc-img');
   if(npcImg){
     npcImg.onerror=()=>{npcImg.src='assets/bg-library.jpg';npcImg.onerror=null;};
-    npcImg.src='assets/bg-debate.jpg';
+    npcImg.src='assets/bg_debate.jpg';
   }
 
   document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
@@ -969,7 +1001,7 @@ function goTab(name,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
   document.getElementById(name+'-panel').classList.add('on'); btn.classList.add('on');
-  if(name==='palace') updPalBtns();
+  if(name==='palace'&&S.three){setTimeout(()=>{const c=document.getElementById('pal-canvas');S.three.renderer.setSize(c.clientWidth,c.clientHeight,false);S.three.camera.aspect=c.clientWidth/c.clientHeight;S.three.camera.updateProjectionMatrix();},50);}
   if(name==='board') drawStrings(); // redraw strings when switching to board
 }
 function showLoad(on){document.getElementById('loading').classList.toggle('on',on);}
