@@ -9,13 +9,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-/* CONFIG — για GitHub Pages χωρίς key */
+/* CONFIG — αλλάξτε μόνο εδώ */
 window.MP_CONFIG = {
-  GEMINI_KEY : '',
-  REPO_BASE  : 'https://raw.githubusercontent.com/dporpatonelis-crypto/mind-palace-cases/main/cases/'
+  GEMINI_KEY : 'AIzaSyC2n5y5xvGS-MeYtL1Uf54T6a3h9gViq4k',
+  REPO_BASE  : 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/cases/'
 };
 </script>
-<script src="config.local.js" onerror="console.log('public mode')"></script>
 <style>
 :root {
   --gold:#c9a84c; --gold-lt:#e8c97a; --gold-dim:#6a5228;
@@ -354,7 +353,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
       <!-- NPC Scene: static image as background, dynamic overlays on top -->
       <div class="npc-scene" id="npc-scene">
         <div id="npc-img-wrap">
-          <img id="npc-img" src="assets/bg-debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
+          <img id="npc-img" src="assets/bg_debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
         </div>
         <!-- Dynamic light overlay (mood) -->
         <div id="npc-light"></div>
@@ -565,8 +564,6 @@ function drawStrings(){
   const cc={contrast:'#c0392b',agreement:'#4a9a4a',development:'#c9a84c'};
   S.d.investigation_board.connections.forEach(c=>{
     const f=EM[c.from],t=EM[c.to]; if(!f||!t) return;
-    // Εμφανίζεται μόνο αν ΚΑΙ τα δύο clues είναι unlocked
-    if(!S.unlocked.has(c.from)||!S.unlocked.has(c.to)) return;
     const fe=f.el,te=t.el;
     const x1=fe.offsetLeft+fe.offsetWidth/2;
     const y1=fe.offsetTop+fe.offsetHeight/2;
@@ -815,15 +812,12 @@ function startRoom(roomId){
   };
   img.onerror=()=>console.warn('❌ BG 404:',th.bg,' — using gradient fallback');
   img.src=th.bg;
-  // NPC debate image
-  const npcImg=document.getElementById('npc-img');
-  if(npcImg){npcImg.onerror=()=>{npcImg.src='assets/bg-library.jpg';npcImg.onerror=null;};npcImg.src='assets/bg-debate.jpg';}
   // NPC scene image — always the debate scene
   // Reload NPC scene image
   const npcImg=document.getElementById('npc-img');
   if(npcImg){
     npcImg.onerror=()=>{npcImg.src='assets/bg-library.jpg';npcImg.onerror=null;};
-    npcImg.src='assets/bg-debate.jpg';
+    npcImg.src='assets/bg_debate.jpg';
   }
 
   document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
@@ -904,6 +898,9 @@ async function send(){
       parsed=await geminiCall(room,dial,figs,clues);
     } catch(e){
       console.error('Gemini error:',e.message);
+      // Show error in chat briefly
+      const errMsg='[API Error: '+e.message.slice(0,60)+']';
+      addNPC(errMsg,'left');
     }
   } else {
     console.warn('No key — using fallback');
@@ -961,7 +958,7 @@ async function geminiCall(room,dial,figs,clues){
      body:JSON.stringify({
        system_instruction:{parts:[{text:sys}]},
        contents,
-       generationConfig:{maxOutputTokens:800,temperature:.85,responseMimeType:'application/json'}
+       generationConfig:{maxOutputTokens:400,temperature:.9}
      })}
   );
   const data=await r.json();
