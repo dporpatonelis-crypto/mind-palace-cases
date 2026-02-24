@@ -12,10 +12,9 @@
 /* CONFIG — αλλάξτε μόνο εδώ */
 window.MP_CONFIG = {
   GEMINI_KEY : '',
-  REPO_BASE  : 'https://raw.githubusercontent.com/dporpatonelis-crypto/mind-palace-cases/main/cases/'
+  REPO_BASE  : 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/cases/'
 };
 </script>
-<script src="config.local.js" onerror="console.log('public mode')"></script>
 <style>
 :root {
   --gold:#c9a84c; --gold-lt:#e8c97a; --gold-dim:#6a5228;
@@ -245,16 +244,8 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 .rflash{animation:rf 2s ease forwards}
 
 /* ── VERDICT ── */
-#verd-panel{
-  padding:2rem;max-width:720px;margin:0 auto;overflow:auto;
-  position:relative;
-}
-#verd-panel::before{
-  content:'';position:fixed;inset:0;z-index:-1;
-  background-image:url('assets/bg-caseclosed.jpg');
-  background-size:cover;background-position:center;
-  filter:brightness(.25) saturate(.6);
-}
+#verd-panel{padding:2rem;max-width:720px;margin:0 auto;overflow:auto;position:relative}
+#verd-panel::before{content:'';position:fixed;inset:0;z-index:-1;background-image:url('assets/bg-caseclosed.jpg');background-size:cover;background-position:center;filter:brightness(.25) saturate(.6)}
 .vseal{width:72px;height:72px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:1rem auto 1.3rem;box-shadow:0 0 28px rgba(201,168,76,.22)}
 .vtitle{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,3vw,1.6rem);color:var(--gold);text-align:center;letter-spacing:.1em}
 .vstamp{display:table;margin:.8rem auto;font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:.32em;text-transform:uppercase;border:3px solid var(--bloodbr);color:var(--bloodbr);padding:.36rem 1.5rem;transform:rotate(-2.5deg);box-shadow:0 0 14px rgba(192,57,43,.2);transition:all .5s}
@@ -680,7 +671,7 @@ function initThree(){
   camera.position.set(0,5,18); camera.lookAt(0,1,0);
   scene.add(new THREE.AmbientLight(0x1a0a05,0.6));
   const ml=new THREE.DirectionalLight(0x3a2a5a,.4); ml.position.set(5,20,10); scene.add(ml);
-  const sp=new THREE.SpotLight(0xc9a84c,1.2,60,Math.PI/3,.8,2); sp.position.set(0,25,5); sp.castShadow=false; scene.add(sp);
+  const sp=new THREE.SpotLight(0xc9a84c,3,40,Math.PI/5,.6,1.5); sp.position.set(0,18,8); sp.castShadow=true; scene.add(sp);
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(50,50),new THREE.MeshStandardMaterial({color:0x120800,roughness:.7,metalness:.2}));
   floor.rotation.x=-Math.PI/2; floor.position.y=-.5; floor.receiveShadow=true; scene.add(floor);
   for(let x=-5;x<=5;x++) for(let z=-4;z<=4;z++){
@@ -693,7 +684,7 @@ function initThree(){
   for(let i=0;i<pc;i++){pp[i*3]=(Math.random()-.5)*42;pp[i*3+1]=Math.random()*14;pp[i*3+2]=(Math.random()-.5)*32;}
   pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
   scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a84c,size:.055,transparent:true,opacity:.5})));
-  // Point lights removed (caused sun glare artifacts)
+  // torch point lights removed
   let drag=false,prev={x:0,y:0},theta=0,phi=.28; const R=18;
   canvas.addEventListener('mousedown',e=>{drag=true;prev={x:e.clientX,y:e.clientY};});
   window.addEventListener('mouseup',()=>drag=false);
@@ -710,7 +701,7 @@ function initThree(){
   let tk=0;
   (function anim(){
     requestAnimationFrame(anim); tk+=.008;
-    // (point lights removed)
+    // (torch animation removed)
     const pa=pg.attributes.position;
     for(let i=0;i<pc;i++){pa.array[i*3+1]+=.005;if(pa.array[i*3+1]>14)pa.array[i*3+1]=0;}
     pa.needsUpdate=true; renderer.render(scene,camera);
@@ -995,19 +986,12 @@ function renderVerdict(){
 function updateVerdict(){
   const rm=S.d.mind_palace.rooms,done=rm.filter(r=>S.revelations.has(r.id)).length;
   const st=document.getElementById('vstamp');
-  // Show partial revelations as they come
   const revDials=S.d.mind_palace.dialogues.filter(d=>S.revelations.has(d.room_id));
-  if(revDials.length>0){
-    document.getElementById('vsynp').textContent=revDials.map(d=>d.revelation).join('
+  if(revDials.length>0) document.getElementById('vsynp').textContent=revDials.map(d=>d.revelation).join('
 
 ');
-  }
-  if(done===rm.length){
-    st.textContent='CASE CLOSED';
-    st.classList.add('done');
-  } else {
-    st.textContent=done===0?'Υπόθεση Εκκρεμεί':done+'/'+rm.length+' Αποκαλύψεις';
-  }
+  if(done===rm.length){st.textContent='CASE CLOSED';st.classList.add('done');}
+  else st.textContent=done===0?'Υπόθεση Εκκρεμεί':done+'/'+rm.length+' Αποκαλύψεις';
 }
 
 /* ── PROGRESS ── */
