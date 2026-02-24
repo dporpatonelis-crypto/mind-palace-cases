@@ -12,9 +12,10 @@
 /* CONFIG — αλλάξτε μόνο εδώ */
 window.MP_CONFIG = {
   GEMINI_KEY : '',
-  REPO_BASE  : 'https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/cases/'
+  REPO_BASE  : 'https://raw.githubusercontent.com/dporpatonelis-crypto/mind-palace-cases/main/cases/'
 };
 </script>
+<script src="config.local.js" onerror="console.log('public mode')"></script>
 <style>
 :root {
   --gold:#c9a84c; --gold-lt:#e8c97a; --gold-dim:#6a5228;
@@ -128,6 +129,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 
 /* ── PALACE ── */
 #palace-panel{position:relative;overflow:hidden;background:#000}
+#pal-bg{position:absolute;inset:0;z-index:0;background-image:url('assets/bg-library.jpg');background-size:cover;background-position:center;filter:brightness(.35) saturate(.7);}
 #pal-canvas{width:100%;height:100%;display:block;cursor:grab}
 #pal-canvas:active{cursor:grabbing}
 #pal-hud{position:absolute;top:1rem;left:1rem;z-index:10;pointer-events:none}
@@ -145,7 +147,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 #dial-panel{display:none;flex-direction:column;position:relative;overflow:hidden;background:#060300}
 #dial-panel.on{display:flex}
 
-#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.78) saturate(.88);transition:background 1s ease}
+#scene-bg{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center 20%;filter:brightness(.78) saturate(.88);transition:background 1s ease;background-image:url('assets/bg-debate.jpg')}
 #scene-grad{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.45) 0%,transparent 15%,transparent 68%,rgba(0,0,0,.95) 100%),linear-gradient(90deg,rgba(0,0,0,.15) 0%,transparent 12%,transparent 88%,rgba(0,0,0,.15) 100%)}
 #mood-layer{position:absolute;inset:0;z-index:2;pointer-events:none;transition:background .8s ease}
 .rays{position:absolute;top:0;left:50%;transform:translateX(-50%);width:70%;height:55%;z-index:2;pointer-events:none;opacity:0;transition:opacity 1.2s ease;background:radial-gradient(ellipse 35% 100% at 35% 0%,rgba(255,215,100,.08),transparent 70%),radial-gradient(ellipse 35% 100% at 65% 0%,rgba(255,200,80,.06),transparent 70%)}
@@ -243,7 +245,16 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 .rflash{animation:rf 2s ease forwards}
 
 /* ── VERDICT ── */
-#verd-panel{padding:2rem;max-width:720px;margin:0 auto;overflow:auto}
+#verd-panel{
+  padding:2rem;max-width:720px;margin:0 auto;overflow:auto;
+  position:relative;
+}
+#verd-panel::before{
+  content:'';position:fixed;inset:0;z-index:-1;
+  background-image:url('assets/bg-caseclosed.jpg');
+  background-size:cover;background-position:center;
+  filter:brightness(.25) saturate(.6);
+}
 .vseal{width:72px;height:72px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:1rem auto 1.3rem;box-shadow:0 0 28px rgba(201,168,76,.22)}
 .vtitle{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,3vw,1.6rem);color:var(--gold);text-align:center;letter-spacing:.1em}
 .vstamp{display:table;margin:.8rem auto;font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:.32em;text-transform:uppercase;border:3px solid var(--bloodbr);color:var(--bloodbr);padding:.36rem 1.5rem;transform:rotate(-2.5deg);box-shadow:0 0 14px rgba(192,57,43,.2);transition:all .5s}
@@ -334,6 +345,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 
     <!-- PALACE -->
     <div class="panel" id="palace-panel">
+      <div id="pal-bg"></div>
       <div id="pal-hud">
         <div class="hudname" id="hudname">Εξερευνήστε το Palace</div>
         <div class="hudq" id="hudq">Σύρετε για περιστροφή · Επιλέξτε δωμάτιο παρακάτω</div>
@@ -353,7 +365,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
       <!-- NPC Scene: static image as background, dynamic overlays on top -->
       <div class="npc-scene" id="npc-scene">
         <div id="npc-img-wrap">
-          <img id="npc-img" src="assets/bg_debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
+          <img id="npc-img" src="assets/bg-debate.jpg" alt="" onerror="this.src='assets/bg-library.jpg';this.onerror=null"/>
         </div>
         <!-- Dynamic light overlay (mood) -->
         <div id="npc-light"></div>
@@ -564,6 +576,7 @@ function drawStrings(){
   const cc={contrast:'#c0392b',agreement:'#4a9a4a',development:'#c9a84c'};
   S.d.investigation_board.connections.forEach(c=>{
     const f=EM[c.from],t=EM[c.to]; if(!f||!t) return;
+    if(!S.unlocked.has(c.from)||!S.unlocked.has(c.to)) return;
     const fe=f.el,te=t.el;
     const x1=fe.offsetLeft+fe.offsetWidth/2;
     const y1=fe.offsetTop+fe.offsetHeight/2;
@@ -667,7 +680,7 @@ function initThree(){
   camera.position.set(0,5,18); camera.lookAt(0,1,0);
   scene.add(new THREE.AmbientLight(0x1a0a05,0.6));
   const ml=new THREE.DirectionalLight(0x3a2a5a,.4); ml.position.set(5,20,10); scene.add(ml);
-  const sp=new THREE.SpotLight(0xc9a84c,3,40,Math.PI/5,.6,1.5); sp.position.set(0,18,8); sp.castShadow=true; scene.add(sp);
+  const sp=new THREE.SpotLight(0xc9a84c,1.2,60,Math.PI/3,.8,2); sp.position.set(0,25,5); sp.castShadow=false; scene.add(sp);
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(50,50),new THREE.MeshStandardMaterial({color:0x120800,roughness:.7,metalness:.2}));
   floor.rotation.x=-Math.PI/2; floor.position.y=-.5; floor.receiveShadow=true; scene.add(floor);
   for(let x=-5;x<=5;x++) for(let z=-4;z<=4;z++){
@@ -680,8 +693,7 @@ function initThree(){
   for(let i=0;i<pc;i++){pp[i*3]=(Math.random()-.5)*42;pp[i*3+1]=Math.random()*14;pp[i*3+2]=(Math.random()-.5)*32;}
   pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
   scene.add(new THREE.Points(pg,new THREE.PointsMaterial({color:0xc9a84c,size:.055,transparent:true,opacity:.5})));
-  const t1=new THREE.PointLight(0xff6600,2,12),t2=new THREE.PointLight(0xff6600,2,12);
-  t1.position.set(-8,5,4); t2.position.set(8,5,4); scene.add(t1,t2);
+  // Point lights removed (caused sun glare artifacts)
   let drag=false,prev={x:0,y:0},theta=0,phi=.28; const R=18;
   canvas.addEventListener('mousedown',e=>{drag=true;prev={x:e.clientX,y:e.clientY};});
   window.addEventListener('mouseup',()=>drag=false);
@@ -694,11 +706,11 @@ function initThree(){
   });
   function rsz(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
   window.addEventListener('resize',rsz);
-  S.three={renderer,scene,camera,t1,t2,pg,pc};
+  S.three={renderer,scene,camera,pg,pc};
   let tk=0;
   (function anim(){
     requestAnimationFrame(anim); tk+=.008;
-    t1.intensity=1.7+Math.sin(tk*7.3)*.4; t2.intensity=1.7+Math.sin(tk*5.1+1)*.4;
+    // (point lights removed)
     const pa=pg.attributes.position;
     for(let i=0;i<pc;i++){pa.array[i*3+1]+=.005;if(pa.array[i*3+1]>14)pa.array[i*3+1]=0;}
     pa.needsUpdate=true; renderer.render(scene,camera);
@@ -817,7 +829,7 @@ function startRoom(roomId){
   const npcImg=document.getElementById('npc-img');
   if(npcImg){
     npcImg.onerror=()=>{npcImg.src='assets/bg-library.jpg';npcImg.onerror=null;};
-    npcImg.src='assets/bg_debate.jpg';
+    npcImg.src='assets/bg-debate.jpg';
   }
 
   document.getElementById('mood-layer').style.background='rgba(0,0,0,0)';
@@ -924,7 +936,7 @@ async function send(){
     renderBoard();
     setTimeout(()=>addNPC('✦ Νέα ένδειξη: «'+nc.title+'»','left'),500);
   }
-  if(S.hist.length>=8&&!S.revelations.has(S.curRoom)){
+  if(S.hist.length>=4&&!S.revelations.has(S.curRoom)){
     S.revelations.add(S.curRoom);
     updProg(); updateVerdict(); applyMood('enlightened');
     document.querySelector('.chat-wrap').classList.add('rflash');
@@ -958,7 +970,7 @@ async function geminiCall(room,dial,figs,clues){
      body:JSON.stringify({
        system_instruction:{parts:[{text:sys}]},
        contents,
-       generationConfig:{maxOutputTokens:400,temperature:.9}
+       generationConfig:{maxOutputTokens:8000,temperature:.85,responseMimeType:'application/json'}
      })}
   );
   const data=await r.json();
@@ -983,8 +995,19 @@ function renderVerdict(){
 function updateVerdict(){
   const rm=S.d.mind_palace.rooms,done=rm.filter(r=>S.revelations.has(r.id)).length;
   const st=document.getElementById('vstamp');
-  if(done===rm.length){st.textContent='CASE CLOSED';st.classList.add('done');document.getElementById('vsynp').textContent=S.d.mind_palace.dialogues.map(d=>d.revelation).join(' ');}
-  else st.textContent=done===0?'Υπόθεση Εκκρεμεί':done+'/'+rm.length+' Αποκαλύψεις';
+  // Show partial revelations as they come
+  const revDials=S.d.mind_palace.dialogues.filter(d=>S.revelations.has(d.room_id));
+  if(revDials.length>0){
+    document.getElementById('vsynp').textContent=revDials.map(d=>d.revelation).join('
+
+');
+  }
+  if(done===rm.length){
+    st.textContent='CASE CLOSED';
+    st.classList.add('done');
+  } else {
+    st.textContent=done===0?'Υπόθεση Εκκρεμεί':done+'/'+rm.length+' Αποκαλύψεις';
+  }
 }
 
 /* ── PROGRESS ── */
