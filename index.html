@@ -248,8 +248,8 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 #verd-panel::before{content:'';position:fixed;inset:0;z-index:-1;background-image:url('assets/bg-caseclosed.jpg');background-size:cover;background-position:center;filter:brightness(.25) saturate(.6)}
 .vseal{width:72px;height:72px;border:2px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:1rem auto 1.3rem;box-shadow:0 0 28px rgba(201,168,76,.22)}
 .vtitle{font-family:'Cinzel Decorative',serif;font-size:clamp(1rem,3vw,1.6rem);color:var(--gold);text-align:center;letter-spacing:.1em}
-.vstamp{display:table;margin:.8rem auto;font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:.32em;text-transform:uppercase;border:3px solid var(--bloodbr);color:var(--bloodbr);padding:.36rem 1.5rem;transform:rotate(-2.5deg);box-shadow:0 0 14px rgba(192,57,43,.2);transition:all .5s}
-.vstamp.done{border-color:#4a9a4a;color:#4a9a4a;box-shadow:0 0 18px rgba(74,154,74,.22)}
+.vstamp{display:none;margin:.8rem auto;font-family:'Cinzel',serif;font-size:.88rem;letter-spacing:.32em;text-transform:uppercase;border:3px solid var(--bloodbr);color:var(--bloodbr);padding:.36rem 1.5rem;transform:rotate(-2.5deg);box-shadow:0 0 14px rgba(192,57,43,.2);transition:all .5s}
+.vstamp.done{display:table;border-color:#4a9a4a;color:#4a9a4a;box-shadow:0 0 18px rgba(74,154,74,.22)}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin-top:1.3rem}
 .vcard{border:1px solid rgba(201,168,76,.14);padding:.85rem;background:rgba(0,0,0,.22)}
 .vrole{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.18em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:.22rem}
@@ -741,10 +741,10 @@ function buildRoom(scene,room,x,z){
   const nh=new THREE.Mesh(new THREE.SphereGeometry(.3,12,10),nm); nh.position.set(x,1.85,z); nh.castShadow=true; scene.add(nh);
   const nb=new THREE.Mesh(new THREE.CylinderGeometry(.22,.36,1.7,8),nm); nb.position.set(x,.65,z); nb.castShadow=true; scene.add(nb);
   const nr=new THREE.Mesh(new THREE.ConeGeometry(.52,1.9,8),nm); nr.position.set(x,-.04,z); scene.add(nr);
-  if(isTp){const hm=new THREE.MeshStandardMaterial({color:0xc9a84c,emissive:0xc9a84c,emissiveIntensity:.9,transparent:true,opacity:.25});const ha=new THREE.Mesh(new THREE.TorusGeometry(.38,.035,8,28),hm);ha.position.set(x,2.28,z);scene.add(ha);}
+  // temple halo torus removed
   const alt=new THREE.Mesh(new THREE.BoxGeometry(1.2,.72,.9),gm); alt.position.set(x+2,.07,z); scene.add(alt);
-  const fm=new THREE.MeshStandardMaterial({color:0xff8800,emissive:0xff4400,emissiveIntensity:5,transparent:true,opacity:.9});
-  const fl2=new THREE.Mesh(new THREE.SphereGeometry(.13,8,8),fm); fl2.position.set(x+2,.56,z); scene.add(fl2);
+  // flame material removed
+  // flame sphere removed
   const fl=new THREE.PointLight(0xff6600,2,7); fl.position.set(x+2,1,z); scene.add(fl);
   const nl=new THREE.PointLight(nc,.6,8); nl.position.set(x,3,z); scene.add(nl);
 }
@@ -987,9 +987,7 @@ function updateVerdict(){
   const rm=S.d.mind_palace.rooms,done=rm.filter(r=>S.revelations.has(r.id)).length;
   const st=document.getElementById('vstamp');
   const revDials=S.d.mind_palace.dialogues.filter(d=>S.revelations.has(d.room_id));
-  if(revDials.length>0) document.getElementById('vsynp').textContent=revDials.map(d=>d.revelation).join('
-
-');
+  if(revDials.length>0) document.getElementById('vsynp').textContent=revDials.map(d=>d.revelation).join(' — ');
   if(done===rm.length){st.textContent='CASE CLOSED';st.classList.add('done');}
   else st.textContent=done===0?'Υπόθεση Εκκρεμεί':done+'/'+rm.length+' Αποκαλύψεις';
 }
