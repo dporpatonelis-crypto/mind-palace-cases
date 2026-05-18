@@ -234,22 +234,25 @@
 
 <script>
 // ---------- STATE ----------
+/* ── CONFIG ── */
+const REPO = (window.MP_CONFIG||{}).REPO_BASE || 'cases/';
+
 let S = { d: null, unlocked: new Set(), rooms: new Set(), revelations: new Set(), curRoom: null, curClue: null, hist: [], stepIndex: 0, currentQuestions: [], currentAnswers: [], currentRevelation: '' };
 
 // ---------- LOAD ----------
 async function doLoad(){
   const url = document.getElementById('inp-url').value.trim();
-  const id = document.getElementById('inp-id').value.trim();
-  let target = url;
-  if(!target && id) target = id+'.json';
+  const id  = document.getElementById('inp-id').value.trim();
+  // REPO prefix: αν δεν δοθεί full URL, χτίζει cases/<id>.json
+  const target = url || (id ? (REPO ? REPO + id + '.json' : id + '.json') : '');
   if(!target){ alert('Βάλε URL ή Case ID'); return; }
   showLoad(true);
   try{
     const r = await fetch(target);
-    if(!r.ok) throw new Error('HTTP '+r.status);
+    if(!r.ok) throw new Error('HTTP ' + r.status);
     const data = await r.json();
     boot(data);
-  }catch(e){ showLoad(false); alert('Σφάλμα: '+e.message); }
+  }catch(e){ showLoad(false); alert('Σφάλμα: ' + e.message); }
 }
 
 function loadDemo(){
