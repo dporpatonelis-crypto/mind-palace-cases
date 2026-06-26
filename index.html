@@ -555,28 +555,6 @@ function boot(data){
   },1100);
 }
 
-/* ── URL PARAMETER SUPPORT ── */
-(function handleUrlParam() {
-  const params = new URLSearchParams(window.location.search);
-  const caseId = params.get('case');
-  if (caseId && REPO) {
-    const url = REPO + caseId + '.json';
-    showLoad(true);
-    fetch(url)
-      .then(res => {
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
-      })
-      .then(data => {
-        boot(data);
-      })
-      .catch(err => {
-        showLoad(false);
-        alert('Σφάλμα φόρτωσης από URL parameter: ' + err.message);
-      });
-  }
-})();
-
 // Εκκίνηση catalog κατά το load
 document.addEventListener('DOMContentLoaded', function() {
   if (REPO) initCatalog();
