@@ -315,7 +315,16 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
   <div class="s-catalog">
     <div class="s-catalog-title">Διαθέσιμα Μαθήματα</div>
     <div id="cat-list"><div class="cat-loading">Φορτώνει βιβλιοθήκη…</div></div>
-    <div class="s-catalog-sep"><span>ή</span></div>
+    <div class="s-catalog-sep"><span>ή άμεση είσοδος</span></div>
+    <div style="display:flex;gap:.4rem">
+      <input type="text" id="inp-url"
+        style="background:rgba(201,168,76,.04);border:1px solid var(--gold-dim);color:var(--parch);font-family:'Crimson Text',serif;font-size:.9rem;padding:.5rem .8rem;outline:none;flex:1;transition:border-color .3s"
+        placeholder="GitHub raw URL ή case ID (π.χ. origen-enigma)"
+        onfocus="this.style.borderColor='var(--gold)'"
+        onblur="this.style.borderColor='var(--gold-dim)'"
+        onkeydown="if(event.key==='Enter')doLoad()" />
+      <button class="btn-g" onclick="doLoad()" style="width:auto;padding:.5rem 1rem;margin:0;white-space:nowrap">→</button>
+    </div>
     <button class="btn-o" onclick="loadDemo()">→ Demo (χωρίς σύνδεση)</button>
   </div>
 </div>
@@ -450,6 +459,26 @@ const REPO = (window.MP_CONFIG||{}).REPO_BASE   || '';
 /* ── CATALOG & ACTIVE LESSON ── */
 let CATALOG = [];
 let ACTIVE_ID = null;
+
+async function doLoad() {
+  const val = (document.getElementById('inp-url').value || '').trim();
+  if (!val) return;
+
+  // Αν είναι πλήρες URL, χρησιμοποίησέ το απευθείας
+  const url = val.startsWith('http')
+    ? val
+    : REPO + val + (val.endsWith('.json') ? '' : '.json');
+
+  showLoad(true);
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    boot(await r.json());
+  } catch(e) {
+    showLoad(false);
+    alert('Σφάλμα φόρτωσης: ' + e.message + '\n\nURL: ' + url);
+  }
+}
 
 async function initCatalog() {
   const catList = document.getElementById('cat-list');

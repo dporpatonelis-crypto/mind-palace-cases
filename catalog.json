@@ -1,8 +1,12 @@
-[
-  {
-    "id": "origen-enigma",
-    "title": "Το Αίνιγμα του Ωριγένη",
-    "type": "comparative",
-    "lesson_type": "Φιλοσοφική Ανάλυση"
-  }
-]
+{
+  "scenarios": [
+    {
+      "id": "origen-enigma",
+      "title": "Το Αίνιγμα του Ωριγένη",
+      "type": "patristic_text_analysis",
+      "status": "complete",
+      "scenarioFile": "cases/origen-enigma.json",
+      "updatedAt": "2026-06-26"
+    }
+  ]
+}
