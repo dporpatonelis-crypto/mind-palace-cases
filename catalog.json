@@ -7,6 +7,14 @@
       "status": "complete",
       "scenarioFile": "cases/origen-enigma.json",
       "updatedAt": "2026-06-26"
+    },
+    {
+      "id": "power-and-kenosis",
+      "title": "Μάθημα",
+      "type": "comparative_hermeneutics",
+      "status": "complete",
+      "scenarioFile": "cases/power-and-kenosis.json",
+      "updatedAt": "2026-06-29"
     }
   ]
 }
