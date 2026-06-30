@@ -15,6 +15,14 @@
       "status": "complete",
       "scenarioFile": "cases/power-and-kenosis.json",
       "updatedAt": "2026-06-29"
+    },
+    {
+      "id": "trinity-revelation",
+      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
+      "type": "comparative_theology",
+      "status": "complete",
+      "scenarioFile": "cases/trinity-revelation.json",
+      "updatedAt": "2026-06-30"
     }
   ]
 }
