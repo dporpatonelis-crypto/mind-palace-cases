@@ -18,7 +18,7 @@
     },
     {
       "id": "trinity-revelation",
-      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
+      "title": "Μάθημα",
       "type": "comparative_theology",
       "status": "complete",
       "scenarioFile": "cases/trinity-revelation.json",
