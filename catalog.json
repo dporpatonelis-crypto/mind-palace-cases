@@ -15,6 +15,14 @@
       "status": "complete",
       "scenarioFile": "cases/power-and-kenosis.json",
       "updatedAt": "2026-07-01"
+    },
+    {
+      "id": "apostolic-interpretive-power-nexus",
+      "title": "Μάθημα",
+      "type": "dynamic-historical-comparative",
+      "status": "complete",
+      "scenarioFile": "cases/apostolic-interpretive-power-nexus.json",
+      "updatedAt": "2026-07-01"
     }
   ]
 }
