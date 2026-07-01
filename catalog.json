@@ -10,19 +10,11 @@
     },
     {
       "id": "power-and-kenosis",
-      "title": "Μάθημα",
+      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
       "type": "comparative_hermeneutics",
       "status": "complete",
       "scenarioFile": "cases/power-and-kenosis.json",
-      "updatedAt": "2026-06-30"
-    },
-    {
-      "id": "trinity-revelation",
-      "title": "Μάθημα",
-      "type": "comparative_theology",
-      "status": "complete",
-      "scenarioFile": "cases/trinity-revelation.json",
-      "updatedAt": "2026-06-30"
+      "updatedAt": "2026-07-01"
     }
   ]
 }
