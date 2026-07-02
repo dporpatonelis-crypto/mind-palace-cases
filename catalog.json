@@ -31,6 +31,14 @@
       "status": "complete",
       "scenarioFile": "cases/oikonomia-tou-pneumatos.json",
       "updatedAt": "2026-07-01"
+    },
+    {
+      "id": "trinity-revelation",
+      "title": "Μάθημα",
+      "type": "comparative_theology",
+      "status": "complete",
+      "scenarioFile": "cases/trinity-revelation.json",
+      "updatedAt": "2026-07-02"
     }
   ]
 }
