@@ -10,11 +10,11 @@
     },
     {
       "id": "power-and-kenosis",
-      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
+      "title": "Μάθημα",
       "type": "comparative_hermeneutics",
       "status": "complete",
       "scenarioFile": "cases/power-and-kenosis.json",
-      "updatedAt": "2026-07-01"
+      "updatedAt": "2026-07-02"
     },
     {
       "id": "apostolic-interpretive-power-nexus",
