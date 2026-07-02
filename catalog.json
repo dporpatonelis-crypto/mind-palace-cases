@@ -3,10 +3,10 @@
     {
       "id": "origen-enigma",
       "title": "Το Αίνιγμα του Ωριγένη",
-      "type": "patristic_text_analysis",
+      "type": "comparative",
       "status": "complete",
       "scenarioFile": "cases/origen-enigma.json",
-      "updatedAt": "2026-06-26"
+      "updatedAt": "2026-07-02"
     },
     {
       "id": "power-and-kenosis",
