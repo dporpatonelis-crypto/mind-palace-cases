@@ -34,11 +34,27 @@
     },
     {
       "id": "trinity-revelation",
-      "title": "Μάθημα",
+      "title": "null",
       "type": "comparative_theology",
       "status": "complete",
       "scenarioFile": "cases/trinity-revelation.json",
-      "updatedAt": "2026-07-02"
+      "updatedAt": "2026-07-05"
+    },
+    {
+      "id": "origen-enigma-full",
+      "title": "To Ainigma tou Origen",
+      "type": "comparative",
+      "status": "complete",
+      "scenarioFile": "cases/origen-enigma-full.json",
+      "updatedAt": "2026-07-13"
+    },
+    {
+      "id": "trinity_dialogue_001",
+      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
+      "type": "theological_concept",
+      "status": "complete",
+      "scenarioFile": "cases/trinity_dialogue_001.json",
+      "updatedAt": "2026-07-15"
     }
   ]
 }
