@@ -1,14 +1,6 @@
 {
   "scenarios": [
     {
-      "id": "origen-enigma",
-      "title": "Το Αίνιγμα του Ωριγένη",
-      "type": "comparative",
-      "status": "complete",
-      "scenarioFile": "cases/origen-enigma.json",
-      "updatedAt": "2026-07-02"
-    },
-    {
       "id": "origen-enigma-full",
       "title": "To Ainigma tou Origen",
       "type": "comparative",
