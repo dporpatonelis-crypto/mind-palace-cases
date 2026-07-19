@@ -15,6 +15,14 @@
       "status": "complete",
       "scenarioFile": "cases/paul_chrysostom_dialogue_001.json",
       "updatedAt": "2026-07-19"
+    },
+    {
+      "id": "trinity_dialogue_001",
+      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
+      "type": "theological_concept",
+      "status": "complete",
+      "scenarioFile": "cases/trinity_dialogue_001.json",
+      "updatedAt": "2026-07-19"
     }
   ]
 }
