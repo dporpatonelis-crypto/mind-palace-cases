@@ -7,6 +7,14 @@
       "status": "complete",
       "scenarioFile": "cases/origen-enigma-full.json",
       "updatedAt": "2026-07-15"
+    },
+    {
+      "id": "paul_chrysostom_dialogue_001",
+      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
+      "type": "theological_concept",
+      "status": "complete",
+      "scenarioFile": "cases/paul_chrysostom_dialogue_001.json",
+      "updatedAt": "2026-07-19"
     }
   ]
 }
