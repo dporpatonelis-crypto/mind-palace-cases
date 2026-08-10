@@ -31,6 +31,14 @@
       "status": "complete",
       "scenarioFile": "cases/paul-chrysostom-logos.json",
       "updatedAt": "2026-07-20"
+    },
+    {
+      "id": "paul-athens-jerusalem-athens",
+      "title": "Ιερουσαλήμ και Αθήνα: η τέχνη του οικουμενικού λόγου",
+      "type": "comparative-dialogue",
+      "status": "complete",
+      "scenarioFile": "cases/paul-athens-jerusalem-athens.json",
+      "updatedAt": "2026-08-10"
     }
   ]
 }
