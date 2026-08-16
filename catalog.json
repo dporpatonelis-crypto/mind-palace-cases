@@ -39,6 +39,14 @@
       "status": "complete",
       "scenarioFile": "cases/paul-athens-jerusalem-athens.json",
       "updatedAt": "2026-08-10"
+    },
+    {
+      "id": "trinity-revelation",
+      "title": "Μάθημα",
+      "type": "comparative_theology",
+      "status": "complete",
+      "scenarioFile": "cases/trinity-revelation.json",
+      "updatedAt": "2026-08-16"
     }
   ]
 }
