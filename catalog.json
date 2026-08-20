@@ -47,6 +47,14 @@
       "status": "complete",
       "scenarioFile": "cases/trinity-revelation.json",
       "updatedAt": "2026-08-16"
+    },
+    {
+      "id": "i-ypothesi-tou-areiou",
+      "title": "Δύο αίθουσες κρίσης: λογική πρόθεση και εμπειρία σωτηρίας",
+      "type": "dialectical-trial",
+      "status": "complete",
+      "scenarioFile": "cases/i-ypothesi-tou-areiou.json",
+      "updatedAt": "2026-08-20"
     }
   ]
 }
