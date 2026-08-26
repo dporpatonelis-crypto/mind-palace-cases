@@ -1,28 +1,20 @@
 {
   "scenarios": [
     {
-      "id": "origen-enigma-full",
-      "title": "To Ainigma tou Origen",
+      "id": "trinity-revelation",
+      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
+      "type": "comparative_theology",
+      "status": "complete",
+      "scenarioFile": "cases/trinity-revelation.json",
+      "updatedAt": "2026-08-26"
+    },
+    {
+      "id": "origen-enigma",
+      "title": "Το Αίνιγμα του Ωριγένη",
       "type": "comparative",
       "status": "complete",
-      "scenarioFile": "cases/origen-enigma-full.json",
-      "updatedAt": "2026-07-15"
-    },
-    {
-      "id": "paul_chrysostom_dialogue_001",
-      "title": "Ο Απόστολος των Εθνών και το Στόμα της Εκκλησίας",
-      "type": "theological_concept",
-      "status": "complete",
-      "scenarioFile": "cases/paul_chrysostom_dialogue_001.json",
-      "updatedAt": "2026-07-19"
-    },
-    {
-      "id": "trinity_dialogue_001",
-      "title": "Η Τριπλή Μαρτυρία του Ενός Θεού",
-      "type": "theological_concept",
-      "status": "complete",
-      "scenarioFile": "cases/trinity_dialogue_001.json",
-      "updatedAt": "2026-07-19"
+      "scenarioFile": "cases/origen-enigma.json",
+      "updatedAt": "2026-08-26"
     },
     {
       "id": "paul-chrysostom-logos",
@@ -30,23 +22,7 @@
       "type": "comparative",
       "status": "complete",
       "scenarioFile": "cases/paul-chrysostom-logos.json",
-      "updatedAt": "2026-07-20"
-    },
-    {
-      "id": "paul-athens-jerusalem-athens",
-      "title": "Ιερουσαλήμ και Αθήνα: η τέχνη του οικουμενικού λόγου",
-      "type": "comparative-dialogue",
-      "status": "complete",
-      "scenarioFile": "cases/paul-athens-jerusalem-athens.json",
-      "updatedAt": "2026-08-10"
-    },
-    {
-      "id": "trinity-revelation",
-      "title": "Μάθημα",
-      "type": "comparative_theology",
-      "status": "complete",
-      "scenarioFile": "cases/trinity-revelation.json",
-      "updatedAt": "2026-08-16"
+      "updatedAt": "2026-08-26"
     },
     {
       "id": "i-ypothesi-tou-areiou",
@@ -54,7 +30,7 @@
       "type": "dialectical-trial",
       "status": "complete",
       "scenarioFile": "cases/i-ypothesi-tou-areiou.json",
-      "updatedAt": "2026-08-20"
+      "updatedAt": "2026-08-26"
     }
   ]
 }
