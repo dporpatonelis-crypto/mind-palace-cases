@@ -39,6 +39,14 @@
       "status": "complete",
       "scenarioFile": "cases/freedom-divine-economy-moses-paisios.json",
       "updatedAt": "2026-08-27"
+    },
+    {
+      "id": "paul-chrysostom-body-of-church",
+      "title": "Το Σώμα της Εκκλησίας — Διακονία και αλληλεξάρτηση",
+      "type": "comparative",
+      "status": "complete",
+      "scenarioFile": "cases/paul-chrysostom-body-of-church.json",
+      "updatedAt": "2026-08-29"
     }
   ]
 }
