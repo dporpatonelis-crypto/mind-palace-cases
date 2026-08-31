@@ -11,7 +11,6 @@
 <script>
 /* CONFIG — αλλάξτε μόνο εδώ */
 window.MP_CONFIG = {
-  GEMINI_KEY : '',
   REPO_BASE  : 'https://raw.githubusercontent.com/dporpatonelis-crypto/mind-palace-cases/main/cases/'
 };
 </script>
@@ -92,7 +91,6 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 .prog-wrap{width:100px;height:2px;background:rgba(201,168,76,.1)}
 .prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold-dim),var(--gold));box-shadow:0 0 7px var(--gold);transition:width .6s ease}
 .prog-pct{font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-dim)}
-.ai-live{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.12em;background:var(--blood);color:#fff;padding:.1rem .35rem;display:none}
 
 /* ── TABS ── */
 #tabs{height:36px;flex-shrink:0;background:var(--woodm);border-bottom:1px solid rgba(201,168,76,.08);display:flex;padding:0 1rem;overflow-x:auto}
@@ -256,12 +254,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
 .sugs{padding:.45rem 1.2rem;display:flex;gap:.4rem;flex-wrap:wrap;border-top:1px solid rgba(201,168,76,.06);flex-shrink:0;background:rgba(0,0,0,.58)}
 .sug{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.08em;color:rgba(201,168,76,.5);border:1px solid rgba(201,168,76,.14);padding:.25rem .6rem;cursor:pointer;transition:all .2s;background:transparent}
 .sug:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06)}
-.cin-row{display:flex;border-top:1px solid rgba(201,168,76,.08);flex-shrink:0;background:rgba(0,0,0,.78);backdrop-filter:blur(12px)}
-#cin{flex:1;background:transparent;border:none;outline:none;color:var(--parch);font-family:'Crimson Text',serif;font-size:1rem;padding:.85rem 1.1rem}
-#cin::placeholder{color:rgba(201,168,76,.2);font-style:italic}
-#csend{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.13em;text-transform:uppercase;color:var(--ink);background:var(--gold);border:none;padding:0 1.3rem;cursor:pointer;transition:all .2s;flex-shrink:0}
-#csend:hover{background:var(--gold-lt)}
-#csend:disabled{opacity:.4;cursor:not-allowed}
+.scripted-note{border-top:1px solid rgba(201,168,76,.08);flex-shrink:0;background:rgba(0,0,0,.78);padding:.65rem 1.1rem;color:rgba(201,168,76,.32);font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.1em;text-align:center}
 .no-room-msg{padding:3rem 2rem;text-align:center;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;color:rgba(201,168,76,.3);line-height:2}
 @keyframes rf{0%{background:rgba(201,168,76,0)}25%{background:rgba(201,168,76,.08)}100%{background:rgba(201,168,76,0)}}
 .rflash{animation:rf 2s ease forwards}
@@ -353,7 +346,6 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
     <div class="hright">
       <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
       <div class="prog-pct" id="pct">0%</div>
-      <span class="ai-live" id="ailive">AI LIVE</span>
       <button onclick="openLib()" style="font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-dim);background:none;border:1px solid rgba(201,168,76,.2);padding:.2rem .6rem;cursor:pointer;transition:all .2s;margin-left:.4rem" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='rgba(201,168,76,.2)';this.style.color='var(--gold-dim)'">📚 Βιβλιοθήκη</button>
     </div>
   </div>
@@ -419,10 +411,7 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
           <div class="typing" id="typing"><div class="tybubble"><div class="tydot"></div><div class="tydot"></div><div class="tydot"></div></div></div>
         </div>
         <div class="sugs" id="sugs"></div>
-        <div class="cin-row">
-          <input id="cin" placeholder="Μιλήστε με τον φιλόσοφο..." onkeydown="if(event.key==='Enter')send()"/>
-          <button id="csend" onclick="send()">Αποστολή →</button>
-        </div>
+        <div class="scripted-note" id="scripted-note">Επιλέξτε μία ερώτηση του σεναρίου</div>
       </div>
     </div>
 
@@ -447,13 +436,12 @@ body{background:var(--wood);color:var(--parch);font-family:'Crimson Text',Georgi
     <div class="mhr"></div>
     <div class="mbodytxt" id="mbodytxt"></div>
     <div class="mfoot" id="mfoot"></div>
-    <button id="mchat" onclick="chatClue()">💬 Ρωτήστε τον φιλόσοφο →</button>
+    <button id="mchat" onclick="chatClue()">💬 Μετάβαση στον διάλογο →</button>
   </div>
 </div>
 
 <script>
 /* ── CONFIG ── */
-const KEY  = (window.MP_CONFIG||{}).GEMINI_KEY  || '';
 const REPO = (window.MP_CONFIG||{}).REPO_BASE   || '';
 
 /* ── CATALOG & ACTIVE LESSON ── */
@@ -565,16 +553,55 @@ document.getElementById('lib-modal').addEventListener('click', function(e) {
 
 function loadDemo(){boot(DEMO);}
 
+function normalizeCaseData(input){
+  const data=(input&&typeof input==='object')?input:{};
+  const rawBoard=(data.investigation_board&&typeof data.investigation_board==='object')?data.investigation_board:{};
+  const rawPalace=(data.mind_palace&&typeof data.mind_palace==='object')?data.mind_palace:{};
+  const clues=(Array.isArray(rawBoard.clues)?rawBoard.clues:[]).map(function(clue,index){
+    const item=(clue&&typeof clue==='object')?clue:{};
+    const difficulty=Number(item.difficulty);
+    return Object.assign({},item,{
+      id:String(item.id||('clue-'+(index+1))),
+      type:item.type||'evidence',
+      title:String(item.title||('Στοιχείο '+(index+1))),
+      content:String(item.content||item.description||''),
+      source:String(item.source||'Κείμενο μαθήματος'),
+      difficulty:Number.isFinite(difficulty)?Math.max(1,Math.min(3,difficulty)):1
+    });
+  });
+  if(!clues.length){
+    clues.push({id:'clue-1',type:'evidence',title:'Δεν υπάρχουν ακόμη clues',content:'Συμπληρώστε το lesson JSON.',source:'Studio validation',difficulty:1});
+  }
+  const rooms=(Array.isArray(rawPalace.rooms)?rawPalace.rooms:[]).map(function(room,index){
+    const item=(room&&typeof room==='object')?room:{};
+    return Object.assign({},item,{
+      id:String(item.id||('room-'+(index+1))),
+      name:String(item.name||('Δωμάτιο '+(index+1))),
+      theme:item.theme||'library',
+      central_question:String(item.central_question||'Ποιο συγκεκριμένο ερώτημα εξετάζει αυτό το δωμάτιο;'),
+      unlock_requirements:Array.isArray(item.unlock_requirements)?item.unlock_requirements:[]
+    });
+  });
+  return Object.assign({},data,{
+    title:String(data.title||'Μάθημα Sacred Blueprint'),
+    investigation_board:Object.assign({},rawBoard,{
+      clues:clues,
+      connections:Array.isArray(rawBoard.connections)?rawBoard.connections:[],
+      figures:Array.isArray(rawBoard.figures)?rawBoard.figures:[],
+      concepts:(rawBoard.concepts&&typeof rawBoard.concepts==='object')?rawBoard.concepts:{core:''}
+    }),
+    mind_palace:Object.assign({},rawPalace,{
+      rooms:rooms,
+      dialogues:Array.isArray(rawPalace.dialogues)?rawPalace.dialogues:[]
+    })
+  });
+}
+
 function boot(data){
+  data=normalizeCaseData(data);
   S.d=data;
   S.unlocked.add(data.investigation_board.clues[0].id);
   document.getElementById('hcase').textContent=data.title;
-  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){
-    document.getElementById('ailive').style.display='inline';
-    console.log('✅ Gemini key loaded, length:',KEY.length);
-  } else {
-    console.warn('⚠️ No Gemini key — NPC will use fallback replies');
-  }
   document.getElementById('splash').classList.add('out');
   setTimeout(()=>{
     document.getElementById('splash').style.display='none';
@@ -586,7 +613,14 @@ function boot(data){
 
 // Εκκίνηση catalog κατά το load
 document.addEventListener('DOMContentLoaded', function() {
-  if (REPO) initCatalog();
+  const previewDataUrl = new URLSearchParams(window.location.search).get('dataUrl');
+  if (previewDataUrl) {
+    showLoad(true);
+    fetch(previewDataUrl, {cache:'no-store'})
+      .then(function(response) { if (!response.ok) throw new Error('HTTP ' + response.status); return response.json(); })
+      .then(function(data) { boot(data); })
+      .catch(function(error) { showLoad(false); console.error('Mind Palace preview failed:', error); });
+  } else if (REPO) initCatalog();
   else {
     document.getElementById('cat-list').innerHTML =
       '<div class="cat-loading" style="color:rgba(201,168,76,.3)">Ρύθμισε το REPO_BASE στο MP_CONFIG</div>';
@@ -626,15 +660,10 @@ async function doLoad(){
 function loadDemo(){boot(DEMO);}
 
 function boot(data){
+  data=normalizeCaseData(data);
   S.d=data;
   S.unlocked.add(data.investigation_board.clues[0].id);
   document.getElementById('hcase').textContent=data.title;
-  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){
-    document.getElementById('ailive').style.display='inline';
-    console.log('✅ Gemini key loaded, length:',KEY.length);
-  } else {
-    console.warn('⚠️ No Gemini key — NPC will use fallback replies');
-  }
   document.getElementById('splash').classList.add('out');
   setTimeout(()=>{
     document.getElementById('splash').style.display='none';
@@ -824,11 +853,11 @@ function openModal(cl){
 }
 function closeModal(){document.getElementById('modal').classList.remove('on');renderBoard();}
 function chatClue(){
-  const cl=S.curClue; closeModal();
+  closeModal();
   const open=S.d.mind_palace.rooms.find(r=>S.rooms.has(r.id));
   if(!open){alert('Ανοίξτε πρώτα ένα δωμάτιο!');return;}
   if(!S.curRoom) startRoom(open.id);
-  setTimeout(()=>{goTab('dial',document.getElementById('tdial'));document.getElementById('cin').value='Πες μου για: "'+cl.title+'"';send();},200);
+  setTimeout(()=>goTab('dial',document.getElementById('tdial')),200);
 }
 document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
@@ -1020,7 +1049,7 @@ function startRoom(roomId){
   area.innerHTML='<div class="typing" id="typing"><div class="tybubble"><div class="tydot"></div><div class="tydot"></div><div class="tydot"></div></div></div>';
   const nr=document.getElementById('noroom'); if(nr) nr.remove();
   addNPC(dial.greeting+' σας καλωσορίζει.\n\n'+room.central_question, 'left');
-  showSugs(dial.questions);
+  showSugs(dial);
 }
 
 function applyMood(mood){
@@ -1052,61 +1081,51 @@ function addUsr(txt){
   area.insertBefore(d,ty); area.scrollTop=area.scrollHeight;
   setSpeaker('right'); // user = right figure reacts
 }
-function showSugs(qs){
+function showSugs(dial){
   const el=document.getElementById('sugs'); el.innerHTML='';
-  (qs||[]).forEach(q=>{const b=document.createElement('button');b.className='sug';b.textContent=q;b.onclick=()=>{document.getElementById('cin').value=q;send();};el.appendChild(b);});
+  const note=document.getElementById('scripted-note');
+  const questions=Array.isArray(dial?.questions)?dial.questions:[];
+  const answers=Array.isArray(dial?.suggested_answers)?dial.suggested_answers:[];
+  const asked=new Set(S.hist.filter(h=>h.role==='user').map(h=>h.parts?.[0]?.text));
+  let validCount=0;
+  questions.forEach((question,index)=>{
+    const q=String(question||'').trim();
+    const answer=typeof answers[index]==='string'?answers[index].trim():'';
+    if(!q||!answer) return;
+    validCount++;
+    if(asked.has(q)) return;
+    const b=document.createElement('button');
+    b.className='sug'; b.textContent=q; b.onclick=()=>sendSuggested(index);
+    el.appendChild(b);
+  });
+  if(note){
+    note.textContent=el.childElementCount
+      ? 'Επιλέξτε μία ερώτηση του σεναρίου'
+      : (validCount?'Ολοκληρώθηκαν οι ερωτήσεις του σεναρίου':'Το JSON δεν περιέχει έγκυρα suggested_answers');
+  }
 }
 
 /* ═══════════════════════════════════
-   GEMINI CALL
-   FIX: system_instruction moved inside
-        first user message for compatibility
-        with gemini-2.0-flash
+   SCRIPTED DIALOGUE — questions and answers come only from JSON
 ═══════════════════════════════════ */
-async function send(){
-  const cin=document.getElementById('cin'),txt=cin.value.trim();
-  if(!txt||!S.curRoom) return;
-  cin.value=''; document.getElementById('csend').disabled=true;
-  addUsr(txt); document.getElementById('sugs').innerHTML='';
-  const ty=document.getElementById('typing'); ty.classList.add('on');
-
-  const room=S.d.mind_palace.rooms.find(r=>r.id===S.curRoom);
+async function sendSuggested(questionIndex){
+  if(!S.curRoom) return;
   const dial=S.d.mind_palace.dialogues.find(d=>d.room_id===S.curRoom);
-  const figs=S.d.investigation_board.figures,clues=S.d.investigation_board.clues;
+  const question=Array.isArray(dial?.questions)?String(dial.questions[questionIndex]||'').trim():'';
+  const reply=Array.isArray(dial?.suggested_answers)&&typeof dial.suggested_answers[questionIndex]==='string'
+    ? dial.suggested_answers[questionIndex].trim()
+    : '';
+  if(!question||!reply) return;
 
-  S.hist.push({role:'user',parts:[{text:txt}]});
-  let parsed=null;
-  if(KEY&&KEY!=='YOUR_GEMINI_KEY_HERE'){
-    try{
-      parsed=await geminiCall(room,dial,figs,clues);
-    } catch(e){
-      console.error('Gemini error:',e.message);
-      // Show error in chat briefly
-      const errMsg='[API Error: '+e.message.slice(0,60)+']';
-      addNPC(errMsg,'left');
-    }
-  } else {
-    console.warn('No key — using fallback');
-    await new Promise(r=>setTimeout(r,600));
-  }
+  addUsr(question); document.getElementById('sugs').innerHTML='';
+  const ty=document.getElementById('typing'); ty.classList.add('on');
+  S.hist.push({role:'user',parts:[{text:question}]});
+  await new Promise(resolve=>setTimeout(resolve,350));
   ty.classList.remove('on');
-
-  const reply=parsed?.reply||dial.revelation||'Σκεφτείτε βαθύτερα τη σχέση μεταξύ '+figs.map(f=>f.name).join(' και ')+'.';
-  const mood=parsed?.mood||'neutral';
-  const nc=parsed?.newClue||null;
 
   S.hist.push({role:'model',parts:[{text:reply}]});
   addNPC(reply,'left');
-  applyMood(mood);
-
-  if(nc&&nc.id&&!S.d.investigation_board.clues.find(c=>c.id===nc.id)){
-    S.d.investigation_board.clues.push(nc);
-    S.unlocked.add(nc.id);
-    const lastId=clues[clues.length-1]?.id;
-    if(lastId) S.d.investigation_board.connections.push({from:lastId,to:nc.id,type:'development',description:'Αποκαλύφθηκε από διάλογο'});
-    renderBoard();
-    setTimeout(()=>addNPC('✦ Νέα ένδειξη: «'+nc.title+'»','left'),500);
-  }
+  applyMood('neutral');
   if(S.hist.length>=4&&!S.revelations.has(S.curRoom)){
     S.revelations.add(S.curRoom);
     updProg(); updateVerdict(); applyMood('enlightened');
@@ -1114,45 +1133,7 @@ async function send(){
     setTimeout(()=>document.querySelector('.chat-wrap').classList.remove('rflash'),2000);
     setTimeout(()=>addNPC('✦ Αποκάλυψη: '+dial.revelation,'left'),900);
   }
-  document.getElementById('csend').disabled=false;
-}
-
-async function geminiCall(room,dial,figs,clues){
-  const sys='Είσαι ο '+dial.greeting+', φιλόσοφος σε ένα Mind Palace. '+
-    'Δωμάτιο: "'+room.name+'". Κεντρικό ερώτημα: '+room.central_question+'. '+
-    'Φιλόσοφοι: '+figs.map(f=>f.name+' ('+f.work+', '+f.era+')').join(' & ')+'. '+
-    'Απαντάς ΠΑΝΤΑ στα Ελληνικά, 1ο πρόσωπο ως αρχαίος σοφός, ποιητικό ύφος, 2-3 προτάσεις. '+
-    'Επέστρεψε ΜΟΝΟ έγκυρο JSON: {"reply":"...","mood":"neutral|tense|enlightened|dark","newClue":null}';
-
-  // Ensure strictly alternating user/model (Gemini API requirement)
-  const raw=[...S.hist.slice(-10)];
-  const contents=[];
-  let lastRole=null;
-  for(const h of raw){
-    if(h.role===lastRole) continue;
-    contents.push(h);
-    lastRole=h.role;
-  }
-  if(contents.length===0||contents[0].role!=='user') return null;
-
-  const r=await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key='+KEY,
-    {method:'POST',headers:{'Content-Type':'application/json'},
-     body:JSON.stringify({
-       system_instruction:{parts:[{text:sys}]},
-       contents,
-       generationConfig:{maxOutputTokens:8000,temperature:.85,responseMimeType:'application/json'}
-     })}
-  );
-  const data=await r.json();
-  if(data.error){console.error('Gemini error:',data.error.message);throw new Error(data.error.message);}
-  if(!data.candidates?.[0]?.content?.parts?.[0]){console.error('Gemini empty:',JSON.stringify(data));throw new Error('Κενή απάντηση');}
-  const txt=data.candidates[0].content.parts[0].text.trim();
-  const clean=txt.replace(/^```json?\s*/,'').replace(/\s*```$/,'').trim();
-  const m=clean.match(/\{[\s\S]*\}/);
-  if(!m) return{reply:txt,mood:'neutral',newClue:null};
-  try{return JSON.parse(m[0]);}
-  catch{return{reply:txt,mood:'neutral',newClue:null};}
+  showSugs(dial);
 }
 /* ── VERDICT ── */
 function renderVerdict(){
@@ -1217,8 +1198,8 @@ const DEMO={
       {id:'r2',name:'Ναός Αποκάλυψης',theme:'temple',unlock_requirements:['c3','c4','c5'],central_question:'Μπορεί ο λόγος να φτάσει εκεί που η αποκάλυψη ξεκινά;'}
     ],
     dialogues:[
-      {room_id:'r1',greeting:'Σωκράτης',questions:['Τι εννοεί ο Πλάτων ότι η μάθηση είναι ανάμνηση;','Πώς διαφέρει η ψυχή του Πλάτωνα από αυτή του Ωριγένη;','Μπορεί ο κόσμος να είναι ταυτόχρονα δεσμωτήριο και σχολείο;'],revelation:'Η γνώση δεν εισέρχεται απ᾽ έξω. Είτε ως ανάμνηση είτε ως χάρη, αναδύεται εκ των έσω. Η διαφορά είναι ποιος την τοποθέτησε εκεί.'},
-      {room_id:'r2',greeting:'Ωριγένης',questions:['Γιατί ο Θεός επέτρεψε στις ψυχές να πέσουν;','Ποια η διαφορά της σωτηρίας από την απελευθέρωση;','Μπορεί ο λόγος να συνυπάρξει με την πίστη;'],revelation:'Ελληνική φιλοσοφία και χριστιανικό δόγμα μοιράζονται γλώσσα αλλά όχι κατεύθυνση. Ο ένας επιστρέφει στον εαυτό, ο άλλος κινείται προς τον Άλλο.'}
+      {room_id:'r1',greeting:'Σωκράτης',questions:['Τι εννοεί ο Πλάτων ότι η μάθηση είναι ανάμνηση;','Πώς διαφέρει η ψυχή του Πλάτωνα από αυτή του Ωριγένη;','Μπορεί ο κόσμος να είναι ταυτόχρονα δεσμωτήριο και σχολείο;'],suggested_answers:['Για τον Πλάτωνα, η ψυχή έχει θεαθεί τις αιώνιες αλήθειες πριν από την ενσάρκωση· η μάθηση ξυπνά μία γνώση που ήδη υπάρχει μέσα της.','Στον Πλάτωνα η ψυχή επιστρέφει σε μία αλήθεια που ήδη γνώριζε· στον Ωριγένη είναι ελεύθερο λογικό ον που απομακρύνθηκε από τον Θεό και χρειάζεται θεραπεία.','Ναι· ως δεσμωτήριο περιορίζει την ψυχή, ενώ ως σχολείο την παιδαγωγεί προς την επιστροφή και την κάθαρση.'],revelation:'Η γνώση δεν εισέρχεται απ᾽ έξω. Είτε ως ανάμνηση είτε ως χάρη, αναδύεται εκ των έσω. Η διαφορά είναι ποιος την τοποθέτησε εκεί.'},
+      {room_id:'r2',greeting:'Ωριγένης',questions:['Γιατί ο Θεός επέτρεψε στις ψυχές να πέσουν;','Ποια η διαφορά της σωτηρίας από την απελευθέρωση;','Μπορεί ο λόγος να συνυπάρξει με την πίστη;'],suggested_answers:['Η πτώση δεν επιβλήθηκε από τον Θεό· έγινε δυνατή επειδή η αγάπη απαιτεί ελευθερία, και η ελευθερία περιλαμβάνει τη δυνατότητα απομάκρυνσης.','Η απελευθέρωση αφαιρεί έναν περιορισμό· η σωτηρία θεραπεύει τη σχέση με τον Θεό και οδηγεί το πρόσωπο σε μία νέα μορφή ζωής.','Μπορούν να συνυπάρξουν όταν ο λόγος ελέγχει και διευκρινίζει, χωρίς να προσποιείται ότι αντικαθιστά την αποκάλυψη.'],revelation:'Ελληνική φιλοσοφία και χριστιανικό δόγμα μοιράζονται γλώσσα αλλά όχι κατεύθυνση. Ο ένας επιστρέφει στον εαυτό, ο άλλος κινείται προς τον Άλλο.'}
     ]
   }
 };
