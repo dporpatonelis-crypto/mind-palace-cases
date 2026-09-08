@@ -39,6 +39,14 @@
       "status": "complete",
       "scenarioFile": "cases/freedom-divine-economy-moses-paisios.json",
       "updatedAt": "2026-08-27"
+    },
+    {
+      "id": "eleftheria-kai-dogmatiki-syneidisi",
+      "title": "Παύλος και Σωφρόνιος — Η ελευθερία γίνεται αγάπη",
+      "type": "comparative",
+      "status": "complete",
+      "scenarioFile": "cases/eleftheria-kai-dogmatiki-syneidisi.json",
+      "updatedAt": "2026-09-08"
     }
   ]
 }
