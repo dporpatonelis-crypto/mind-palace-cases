@@ -47,6 +47,14 @@
       "status": "complete",
       "scenarioFile": "cases/eleftheria-kai-dogmatiki-syneidisi.json",
       "updatedAt": "2026-09-08"
+    },
+    {
+      "id": "palaia-kai-kaini-diathiki-enotita",
+      "title": "Μωυσής και Παύλος: από τη Σκιά στην Αλήθεια",
+      "type": "comparative",
+      "status": "complete",
+      "scenarioFile": "cases/palaia-kai-kaini-diathiki-enotita.json",
+      "updatedAt": "2026-10-03"
     }
   ]
 }
